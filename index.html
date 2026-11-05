@@ -1,0 +1,487 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f6f1">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Lingua">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" href="./icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="./icon.svg">
+  <title>Lingua — английский каждый день</title>
+  <style>
+    :root{--ink:#202a24;--muted:#7d8980;--line:#e9ede7;--paper:#fff;--canvas:#f5f6f1;--green:#2e674b;--green-dark:#204d38;--mint:#e5f0e7;--lime:#d8f17b;--yellow:#f8edce;--shadow:0 14px 42px rgba(33,52,40,.07)}
+    *{box-sizing:border-box}body{margin:0;background:var(--canvas);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;font-size:14px;line-height:1.5}button{font:inherit;color:inherit;border:0;cursor:pointer}button:disabled{opacity:.45;cursor:not-allowed;transform:none!important}button:focus-visible{outline:3px solid #8cb89a;outline-offset:3px} .app{min-height:100vh;display:flex}
+    .sidebar{width:250px;background:#fff;border-right:1px solid var(--line);padding:27px 18px 22px;display:flex;flex-direction:column;flex-shrink:0}.brand{display:flex;align-items:center;gap:10px;padding:0 12px 34px;color:var(--green-dark);font-weight:800;font-size:20px;letter-spacing:-.7px}.brand-mark{height:30px;width:30px;border-radius:10px;background:var(--green);display:grid;place-items:center;color:#fff}.brand-mark svg{width:17px;height:17px}.nav-label{padding:0 12px;margin:0 0 9px;color:#a0aaa1;text-transform:uppercase;letter-spacing:1.2px;font-size:10px;font-weight:750}.nav{display:grid;gap:5px}.nav-btn{width:100%;display:flex;align-items:center;gap:13px;padding:11px 12px;border-radius:11px;background:transparent;color:#66736a;text-align:left;font-weight:600;transition:.18s}.nav-btn svg{width:18px;height:18px;stroke:currentColor}.nav-btn:hover{background:#f7f9f6;color:var(--green)}.nav-btn.active{background:var(--mint);color:var(--green-dark)}.nav-badge{margin-left:auto;font-size:10px;background:#fff;border-radius:7px;padding:2px 7px;color:var(--green)}.sidebar-bottom{margin-top:auto}.goal-card{background:#f6f8f3;border:1px solid var(--line);border-radius:15px;padding:15px;margin:12px 4px 18px}.goal-head{display:flex;align-items:center;justify-content:space-between;font-weight:700;font-size:12px}.goal-head span:last-child{color:var(--green);font-size:11px}.goal-card p{margin:6px 0 11px;color:var(--muted);font-size:11px}.progress-track{height:6px;background:#e4eae2;border-radius:9px;overflow:hidden}.progress-fill{height:100%;width:40%;background:var(--green);border-radius:9px;transition:width .3s}.profile{display:flex;align-items:center;gap:10px;padding:12px 10px 0;border-top:1px solid var(--line)}.avatar{width:34px;height:34px;border-radius:50%;background:#f5dfbc;color:#684d2b;display:grid;place-items:center;font-weight:800;font-size:12px}.profile-name{font-weight:700;font-size:12px}.profile-sub{font-size:10px;color:var(--muted)}.content{min-width:0;flex:1;padding:0 44px 50px}.topbar{height:86px;display:flex;align-items:center;justify-content:space-between;max-width:1120px;margin:auto}.date-label{font-size:11px;color:#96a198;text-transform:uppercase;letter-spacing:1.25px;font-weight:700}.top-actions{display:flex;align-items:center;gap:11px}.icon-btn{height:38px;width:38px;border:1px solid var(--line);background:#fff;border-radius:12px;display:grid;place-items:center;color:#78847a}.icon-btn svg{width:17px;height:17px;stroke:currentColor}.mobile-menu{display:none}.page{max-width:1120px;margin:0 auto}.greeting{margin:10px 0 22px}.greeting h1{font-size:28px;line-height:1.2;letter-spacing:-1px;margin:0 0 6px}.greeting p{margin:0;color:var(--muted);font-size:14px}.hero{position:relative;isolation:isolate;overflow:hidden;min-height:235px;border-radius:22px;background:var(--green-dark);padding:34px 39px;color:#fff;display:flex;align-items:center;box-shadow:var(--shadow)}.hero:before,.hero:after{content:"";position:absolute;z-index:-1;border-radius:50%;background:rgba(255,255,255,.045)}.hero:before{width:370px;height:370px;right:115px;top:-225px}.hero:after{width:290px;height:290px;right:190px;bottom:-250px}.hero-copy{max-width:475px;position:relative;z-index:1}.eyebrow{display:inline-flex;align-items:center;gap:7px;color:#cee2d3;font-size:11px;font-weight:700;letter-spacing:.65px;text-transform:uppercase}.eyebrow-dot{width:6px;height:6px;border-radius:50%;background:var(--lime)}.hero h2{font-size:27px;letter-spacing:-.9px;line-height:1.22;margin:13px 0 8px;max-width:405px}.hero p{margin:0 0 21px;color:#d1e0d4;font-size:13px}.primary-btn{background:var(--lime);color:#263b2d;border-radius:10px;padding:11px 16px;font-size:12px;font-weight:800;display:inline-flex;align-items:center;gap:9px;transition:transform .18s,background .18s}.primary-btn:hover{transform:translateY(-1px);background:#e1f99b}.primary-btn svg{width:15px;height:15px;stroke:currentColor}.hero-art{position:absolute;right:43px;top:50%;transform:translateY(-50%);width:300px;height:180px;display:flex;align-items:center;justify-content:center}.mini-card{position:absolute;width:184px;height:126px;background:#fff;border-radius:16px;padding:18px 19px;color:var(--ink);box-shadow:0 16px 36px rgba(0,0,0,.17);transform:rotate(7deg) translate(33px,4px);opacity:.64}.mini-card.back{background:#eef4eb;transform:rotate(-8deg) translate(-24px,-5px);opacity:.9}.mini-card.front{z-index:2;transform:rotate(2deg) translate(5px,5px);opacity:1}.mini-card small{font-size:9px;letter-spacing:1px;text-transform:uppercase;color:#8b9b8d;font-weight:750}.mini-word{font-size:22px;font-weight:800;letter-spacing:-.6px;margin-top:11px}.mini-translation{font-size:11px;color:#7f8a81}.mini-audio{position:absolute;right:15px;bottom:15px;width:27px;height:27px;background:var(--mint);border-radius:9px;display:grid;place-items:center;color:var(--green)}.mini-audio svg{width:13px;height:13px;stroke:currentColor}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:19px 0 26px}.stat-card{background:#fff;border:1px solid var(--line);border-radius:15px;padding:15px 17px;display:flex;align-items:center;gap:13px}.stat-icon{width:38px;height:38px;display:grid;place-items:center;border-radius:12px;background:#f0f5ec;color:var(--green)}.stat-icon.yellow{background:#fcf5df;color:#aa8a39}.stat-icon.pink{background:#f8e9e2;color:#bb7459}.stat-icon svg{width:18px;height:18px;stroke:currentColor}.stat-value{font-weight:800;font-size:19px;line-height:1.15;letter-spacing:-.5px}.stat-label{font-size:10px;color:var(--muted);margin-top:3px}.section-head{display:flex;align-items:end;justify-content:space-between;margin-bottom:13px}.section-head h3{margin:0;font-size:17px;letter-spacing:-.4px}.text-btn{background:transparent;color:var(--green);font-size:11px;font-weight:750;padding:4px 0}.text-btn:hover{text-decoration:underline}.lower-grid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(250px,.9fr);gap:16px}.deck-card,.challenge-card{background:#fff;border:1px solid var(--line);border-radius:17px;padding:18px}.deck-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}.deck-symbol{width:43px;height:43px;display:grid;place-items:center;background:#f5eee1;border-radius:13px;color:#8d7040}.deck-symbol svg{width:20px;height:20px;stroke:currentColor}.level-tag{background:#f3f6f1;color:#7e8b80;border-radius:7px;padding:5px 8px;font-size:9px;font-weight:800;letter-spacing:.5px}.deck-title{font-size:16px;font-weight:800;margin:13px 0 4px}.deck-meta{font-size:11px;color:var(--muted);display:flex;gap:7px;align-items:center}.deck-meta .dot{width:3px;height:3px;border-radius:50%;background:#b2bcb3}.deck-progress{display:flex;align-items:center;gap:10px;margin-top:18px}.deck-progress .progress-track{flex:1}.deck-progress small{color:var(--muted);font-size:10px;white-space:nowrap}.deck-actions{display:flex;gap:8px;margin-top:16px}.small-primary{border-radius:9px;background:var(--green);color:white;padding:9px 13px;font-size:11px;font-weight:750}.small-primary:hover{background:var(--green-dark)}.small-secondary{border-radius:9px;background:#f4f6f2;color:#536257;padding:9px 12px;font-size:11px;font-weight:700}.small-secondary:hover{background:#eaf0e8}.challenge-card{background:#faf5e8;border-color:#f0e8d4;position:relative;overflow:hidden}.challenge-card:after{content:"✦";position:absolute;right:18px;top:15px;font-size:24px;color:#e7cb81}.challenge-label{font-size:10px;text-transform:uppercase;letter-spacing:.9px;color:#a88a48;font-weight:800}.challenge-card h4{font-size:16px;line-height:1.3;margin:9px 0 6px;max-width:185px}.challenge-card p{font-size:11px;color:#8c8066;margin:0 0 16px;max-width:190px}.challenge-link{background:transparent;padding:0;color:#866b32;font-size:11px;font-weight:800}.mode-row{display:flex;gap:9px;margin-top:23px}.mode-chip{flex:1;background:#fff;border:1px solid var(--line);padding:12px;border-radius:13px;text-align:left;display:flex;align-items:center;gap:10px;transition:.18s}.mode-chip:hover{border-color:#bfd1c2;transform:translateY(-1px)}.mode-chip .mode-icon{width:32px;height:32px;display:grid;place-items:center;background:#eef4ed;border-radius:10px;color:var(--green)}.mode-chip .mode-icon svg{width:16px;height:16px;stroke:currentColor}.mode-chip strong{font-size:11px;display:block}.mode-chip span{font-size:9px;color:var(--muted);display:block;margin-top:2px}.mode-chip .chevron{margin-left:auto;color:#a5b0a6;font-size:17px}.view-title{margin:12px 0 22px}.view-title h1{font-size:27px;letter-spacing:-.8px;margin:0 0 5px}.view-title p{margin:0;color:var(--muted)}.study-shell{max-width:720px;margin:25px auto 0}.study-topline{display:flex;align-items:center;justify-content:space-between;margin-bottom:15px}.study-type{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:800;color:var(--green)}.study-type svg{width:16px;height:16px;stroke:currentColor}.counter{font-size:11px;color:var(--muted);font-weight:700}.study-progress{height:5px;background:#e6ebe5;border-radius:9px;margin-bottom:18px;overflow:hidden}.study-progress div{height:100%;width:8%;background:var(--green);border-radius:9px;transition:width .25s}.flashcard{width:100%;min-height:340px;background:#fff;border:1px solid var(--line);border-radius:21px;box-shadow:var(--shadow);padding:30px;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;text-align:center;transition:transform .22s;cursor:pointer}.flashcard:hover{transform:translateY(-2px)}.flashcard .word-type{position:absolute;top:22px;left:24px;font-size:10px;color:#98a39a;text-transform:uppercase;letter-spacing:1px;font-weight:750}.flashcard .speaker{position:absolute;top:17px;right:18px;background:#f2f6f0;width:36px;height:36px;border-radius:11px;display:grid;place-items:center;color:var(--green)}.speaker svg{height:17px;width:17px;stroke:currentColor}.flashcard .word{font-size:42px;font-weight:800;letter-spacing:-1.8px}.flashcard .hint{color:var(--muted);font-size:12px;margin-top:10px}.flashcard .answer{display:none;margin-top:21px;padding-top:18px;border-top:1px solid var(--line);width:min(100%,420px)}.flashcard.revealed .answer{display:block}.answer-translation{font-size:19px;font-weight:800;color:var(--green-dark)}.answer-example{font-size:13px;color:#66736a;margin-top:7px;font-style:italic}.flashcard .flip-label{position:absolute;bottom:19px;font-size:10px;color:#9ca69d}.flash-controls{display:flex;justify-content:center;gap:10px;margin-top:17px}.control-btn{border:1px solid var(--line);background:#fff;border-radius:11px;padding:11px 15px;font-size:11px;font-weight:750;display:flex;align-items:center;gap:7px}.control-btn:hover{background:#f7f9f6}.control-btn.success{background:var(--green);color:white;border-color:var(--green)}.control-btn.success:hover{background:var(--green-dark)}.control-btn svg{width:14px;height:14px;stroke:currentColor}.text-center{text-align:center}.quiz-shell{max-width:700px;margin:26px auto}.quiz-card{background:#fff;border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow);padding:30px}.quiz-question-label{font-size:10px;color:#8e9b90;font-weight:800;letter-spacing:1px;text-transform:uppercase}.quiz-question{font-size:25px;line-height:1.3;letter-spacing:-.6px;font-weight:800;margin:11px 0 24px}.quiz-choices{display:grid;gap:10px}.choice{width:100%;text-align:left;border:1px solid var(--line);background:#fff;border-radius:12px;padding:13px 15px;font-size:13px;font-weight:650;transition:.15s;display:flex;align-items:center;gap:12px}.choice:hover:not(:disabled){border-color:#a9c1ac;background:#f8fbf7}.choice-letter{height:25px;width:25px;display:grid;place-items:center;background:#f4f6f3;border-radius:8px;font-size:10px;color:#758278;font-weight:800}.choice.correct{border-color:#7db08a;background:#f0f7f0;color:#286340}.choice.wrong{border-color:#e2a39a;background:#fff4f1;color:#a34f43}.quiz-feedback{margin-top:14px;min-height:21px;font-size:12px;font-weight:700}.quiz-bottom{display:flex;justify-content:space-between;align-items:center;margin-top:18px}.quiz-bottom .small-secondary{background:#f4f6f2}.match-shell{max-width:850px;margin:26px auto}.match-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}.match-status{font-size:12px;color:var(--muted)}.match-status strong{color:var(--green-dark)}.match-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:11px}.match-tile{min-height:89px;border:1px solid var(--line);background:#fff;border-radius:13px;padding:12px;font-size:12px;font-weight:700;box-shadow:0 2px 6px rgba(30,50,36,.02);transition:.15s}.match-tile:hover:not(:disabled){border-color:#a8c0aa;background:#f8fbf7}.match-tile.selected{border-color:var(--green);box-shadow:0 0 0 2px rgba(46,103,75,.12);color:var(--green-dark)}.match-tile.matched{opacity:.34;transform:scale(.97);pointer-events:none}.match-tile.mismatch{animation:shake .28s;border-color:#d59187;background:#fff6f3}@keyframes shake{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}.empty-state{background:#fff;border:1px solid var(--line);border-radius:18px;padding:35px;text-align:center;color:var(--muted)}.finish-card{max-width:500px;background:#fff;border:1px solid var(--line);border-radius:20px;padding:35px;text-align:center;box-shadow:var(--shadow);margin:50px auto}.finish-emoji{font-size:42px}.finish-card h2{margin:10px 0 6px;font-size:23px;letter-spacing:-.5px}.finish-card p{color:var(--muted);margin:0 0 20px}.toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);opacity:0;pointer-events:none;background:#263d2e;color:#fff;padding:10px 15px;border-radius:11px;font-size:12px;font-weight:700;box-shadow:var(--shadow);transition:.25s;z-index:10}.toast.show{opacity:1;transform:translate(-50%,0)}.hidden{display:none!important}
+    .library-toolbar{display:flex;align-items:center;justify-content:space-between;gap:14px;background:#fff;border:1px solid var(--line);border-radius:15px;padding:14px 16px;margin:20px 0 13px}.library-count{font-size:12px;color:var(--muted)}.library-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.library-actions button{font-size:11px}.owned-list{display:grid;gap:9px}.owned-card{display:flex;align-items:center;justify-content:space-between;gap:15px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:15px 17px}.owned-terms{min-width:0}.owned-en{font-size:15px;font-weight:800;overflow-wrap:anywhere}.owned-ru{font-size:12px;color:#66736a;margin-top:3px;overflow-wrap:anywhere}.owned-example{font-size:11px;color:#98a198;margin-top:5px;font-style:italic;overflow-wrap:anywhere}.owned-actions{display:flex;gap:6px;flex-shrink:0}.tiny-btn{background:#f4f6f2;border-radius:8px;padding:7px 9px;font-size:10px;font-weight:750;color:#536257}.tiny-btn:hover{background:#eaf0e8}.tiny-btn.danger{color:#a34f43;background:#fff3f0}.tiny-btn.danger:hover{background:#fde8e3}.empty-state h2{color:var(--ink);font-size:20px;margin:0 0 7px}.empty-state p{font-size:12px;margin:0 auto 18px;max-width:410px}.empty-emoji{font-size:32px;margin-bottom:10px}.modal-backdrop{position:fixed;inset:0;z-index:50;background:rgba(22,34,26,.42);display:grid;place-items:center;padding:18px}.modal{width:min(100%,470px);background:#fff;border-radius:20px;padding:23px;box-shadow:0 24px 80px rgba(20,35,25,.2)}.modal-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:17px}.modal-head h2{font-size:20px;letter-spacing:-.5px;margin:0}.modal-head p{font-size:11px;color:var(--muted);margin:4px 0 0}.modal-close{width:31px;height:31px;border-radius:9px;background:#f3f6f2;font-size:19px;line-height:1;color:#6e7c70}.form-field{display:grid;gap:6px;margin:12px 0}.form-field label{font-size:11px;font-weight:750;color:#5a695e}.form-field input,.form-field textarea{width:100%;border:1px solid #e2e8e1;border-radius:10px;padding:11px 12px;font:inherit;font-size:13px;color:var(--ink);outline:none;background:#fcfdfb}.form-field input:focus,.form-field textarea:focus{border-color:#8caf91;box-shadow:0 0 0 3px rgba(87,139,96,.12)}.form-field textarea{min-height:76px;resize:vertical}.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}.modal-actions button{font-size:11px}.quiz-input{display:flex;gap:8px;margin-top:14px}.quiz-input input{min-width:0;flex:1;border:1px solid var(--line);border-radius:10px;padding:11px 12px;font:inherit;font-size:13px}.quiz-input input:focus{outline:2px solid #a6c2aa}.disabled-note{font-size:10px;color:var(--muted);margin:8px 0 0}
+    .game-options{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:20px 0}.game-option{background:#fff;border:1px solid var(--line);border-radius:17px;padding:20px;display:flex;flex-direction:column;align-items:flex-start;min-height:230px}.game-emoji{width:45px;height:45px;background:var(--mint);border-radius:14px;display:grid;place-items:center;font-size:22px;margin-bottom:14px}.game-option h3{font-size:16px;letter-spacing:-.3px;margin:0 0 6px}.game-option p{color:var(--muted);font-size:11px;margin:0 0 14px;flex:1}.game-option .small-primary,.game-option .small-secondary{font-size:11px}.game-option .disabled-note{margin:10px 0 0}.letter-answer{min-height:52px;border:1px dashed #cdd8ce;background:#f8faf7;border-radius:12px;padding:12px;display:flex;align-items:center;justify-content:center;gap:5px;font-size:18px;font-weight:800;letter-spacing:2px;margin:15px 0}.letter-answer .placeholder{font-size:11px;font-weight:500;letter-spacing:0;color:var(--muted)}.letter-bank{display:flex;justify-content:center;gap:7px;flex-wrap:wrap;margin:12px 0}.letter-tile{width:39px;height:42px;background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:0 2px 5px rgba(30,50,36,.05);font-size:15px;font-weight:800}.letter-tile:hover:not(:disabled){border-color:#9db7a1;background:#f6faf5}.letter-tile.used{opacity:.35}.mini-feedback{min-height:22px;font-size:12px;font-weight:750;margin-top:10px}.binary-prompt{background:#fff;border:1px solid var(--line);border-radius:18px;padding:28px;text-align:center;box-shadow:var(--shadow)}.binary-word{font-size:28px;font-weight:800;letter-spacing:-.7px}.binary-translation{font-size:18px;color:var(--green-dark);margin:10px 0 20px}.binary-controls{display:flex;justify-content:center;gap:10px}.binary-controls button{min-width:145px}
+    @media(max-width:1000px){.content{padding:0 25px 40px}.hero-art{right:10px;transform:translateY(-50%) scale(.88)}.hero-copy{max-width:430px}.stats{gap:10px}}
+    @media(max-width:760px){.app{display:block}.sidebar{position:fixed;z-index:20;inset:0 auto 0 0;width:270px;transform:translateX(-105%);transition:transform .25s;box-shadow:var(--shadow)}.sidebar.open{transform:translateX(0)}.mobile-menu{display:grid}.content{padding:0 17px 35px}.topbar{height:68px}.topbar .date-label{font-size:9px}.greeting{margin:8px 0 18px}.greeting h1{font-size:24px}.hero{min-height:270px;padding:26px 23px;align-items:flex-start}.hero-copy{max-width:100%;z-index:3}.hero h2{font-size:23px;max-width:340px}.hero p{max-width:310px}.hero-art{opacity:.55;right:-28px;top:auto;bottom:-18px;transform:scale(.7);transform-origin:bottom right}.stats{grid-template-columns:1fr;gap:8px;margin:13px 0 23px}.stat-card{padding:11px 13px}.stat-icon{width:34px;height:34px}.stat-value{font-size:17px}.lower-grid{grid-template-columns:1fr}.challenge-card{min-height:150px}.mode-row{display:grid;grid-template-columns:1fr}.mode-chip{padding:10px}.view-title h1{font-size:24px}.study-shell,.quiz-shell,.match-shell{margin-top:18px}.flashcard{min-height:300px;padding:25px}.flashcard .word{font-size:35px}.flash-controls{gap:6px;flex-wrap:wrap}.control-btn{padding:10px 11px;font-size:10px}.quiz-card{padding:22px}.quiz-question{font-size:21px}.match-grid{grid-template-columns:repeat(2,1fr);gap:8px}.match-tile{min-height:72px;font-size:11px}.profile{margin-top:24px}.library-toolbar{align-items:stretch;flex-direction:column}.library-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.owned-card{align-items:flex-start;padding:13px}.owned-actions{flex-direction:column}.modal{padding:19px}.game-options{grid-template-columns:1fr}.game-option{min-height:0}.binary-controls{flex-direction:column}.binary-controls button{width:100%}.letter-tile{width:35px;height:38px}}
+    @media(min-width:761px){.sidebar{position:sticky;top:0;height:100vh}}
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand"><span class="brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17c3.5-9 10.5-10 14-10-1 7-5 13-12 13"/><path d="M6 19c2-4 5-6 9-8"/></svg></span>lingua</div>
+      <p class="nav-label">Меню</p>
+      <nav class="nav" aria-label="Основная навигация">
+        <button class="nav-btn active" data-view="home"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></svg>Главная</button>
+        <button class="nav-btn" data-view="cards"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="13" height="15" rx="2"/><path d="M8 8h5M8 12h5M8 16h2M8 2h12a2 2 0 0 1 2 2v14"/></svg>Мои карточки<span class="nav-badge" id="nav-card-count">0</span></button>
+        <button class="nav-btn" data-view="test"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-4"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="m8 13 2 2 5-5"/></svg>Тест</button>
+        <button class="nav-btn" data-view="match"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10M7 12h10M7 17h10"/><circle cx="4" cy="7" r="1"/><circle cx="20" cy="12" r="1"/><circle cx="4" cy="17" r="1"/></svg>Мини-игры</button>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="goal-card"><div class="goal-head"><span>Цель на сегодня</span><span id="goal-count">0 / 10</span></div><p>Повторяйте свои карточки понемногу.</p><div class="progress-track"><div class="progress-fill" id="goal-fill"></div></div></div>
+        <div class="profile"><div class="avatar">EN</div><div><div class="profile-name">Мой английский</div><div class="profile-sub">Личный словарь</div></div></div>
+      </div>
+    </aside>
+    <main class="content">
+      <header class="topbar"><div style="display:flex;align-items:center;gap:12px"><button class="icon-btn mobile-menu" id="menu-toggle" aria-label="Открыть меню"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button><div class="date-label" id="today-date"></div></div><div class="top-actions"><button class="icon-btn" id="sound-toggle" aria-label="Озвучивание включено"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg></button></div></header>
+      <div class="page" id="view-home">
+        <div class="greeting"><h1>Привет! Готовы к английскому? <span aria-hidden="true">👋</span></h1><p>Создайте свои карточки и учите именно то, что нужно вам.</p></div>
+        <section class="hero"><div class="hero-copy"><div class="eyebrow"><span class="eyebrow-dot"></span>ВАШИ СЛОВА · ВАШ ТЕМП</div><h2>Соберите личный набор английских карточек</h2><p>Добавляйте слова и фразы, а потом повторяйте их в карточках, тесте или мини-игре.</p><button class="primary-btn" data-go="cards">Создать карточки <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></div><div class="hero-art" aria-hidden="true"><div class="mini-card back"><small>ваша карточка</small><div class="mini-word">your word</div><div class="mini-translation">ваш перевод</div></div><div class="mini-card"><small>пример</small><div class="mini-word">your phrase</div><div class="mini-translation">ваш пример</div></div><div class="mini-card front"><small>лицевая сторона</small><div class="mini-word">EN ↔ RU</div><div class="mini-translation">слово и перевод</div><div class="mini-audio"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4zM15.5 8.5a5 5 0 0 1 0 7"/></svg></div></div></div></section>
+        <section class="stats" aria-label="Статистика обучения"><div class="stat-card"><div class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M17 7.5c0-1.7-2.2-3-5-3s-5 1.3-5 3 2.2 3 5 3 5 1.3 5 3-2.2 3-5 3-5-1.3-5-3"/></svg></div><div><div class="stat-value" id="learned-stat">0</div><div class="stat-label">карточек повторено сегодня</div></div></div><div class="stat-card"><div class="stat-icon yellow"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 9h8M8 13h8M8 17h4"/></svg></div><div><div class="stat-value" id="cards-stat">0</div><div class="stat-label">ваших карточек в наборе</div></div></div><div class="stat-card"><div class="stat-icon pink"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V5M4 19h17"/><path d="m7 15 4-4 3 2 6-7"/></svg></div><div><div class="stat-value" id="mastered-stat">0 из 0</div><div class="stat-label">карточек уже знаю</div></div></div></section>
+        <div class="section-head"><h3>Мои карточки</h3><button class="text-btn" data-go="cards">Открыть набор <span aria-hidden="true">→</span></button></div>
+        <div class="lower-grid"><section class="deck-card"><div class="deck-top"><div class="deck-symbol"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v16H6.5A2.5 2.5 0 0 0 4 21z"/><path d="M4 5.5v13M8 7h8M8 11h7"/></svg></div><span class="level-tag">ВАШ НАБОР</span></div><div class="deck-title">Мои слова и фразы</div><div class="deck-meta"><span id="owned-count">0 карточек</span><span class="dot"></span><span>Создайте свой словарь</span></div><div class="deck-progress"><div class="progress-track"><div class="progress-fill" id="deck-fill"></div></div><small id="deck-progress-label">Добавьте первую карточку</small></div><div class="deck-actions"><button class="small-primary" data-go="cards">Добавить карточку</button><button class="small-secondary" data-go="test">Начать тест</button></div></section><section class="challenge-card"><div class="challenge-label">МИНИ-ИГРЫ</div><h4>Выберите способ повторить слова</h4><p>Соберите пары, составьте слово или сыграйте в «Верно или нет».</p><button class="challenge-link" data-go="match">Выбрать игру →</button></section></div>
+        <div class="mode-row"><button class="mode-chip" data-go="cards"><span class="mode-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="14" height="16" rx="2"/><path d="M8 9h6M8 13h6"/></svg></span><span><strong>Карточки</strong><span>Учи в своём темпе</span></span><b class="chevron">›</b></button><button class="mode-chip" data-go="test"><span class="mode-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 4 4L19 6"/></svg></span><span><strong>Проверка знаний</strong><span>Выбери верный ответ</span></span><b class="chevron">›</b></button><button class="mode-chip" data-go="match"><span class="mode-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10M7 12h10M7 17h10"/></svg></span><span><strong>Мини-игры</strong><span>Три игровых режима</span></span><b class="chevron">›</b></button></div>
+      </div>
+      <div class="page hidden" id="view-cards"></div><div class="page hidden" id="view-test"></div><div class="page hidden" id="view-match"></div>
+    </main>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script>
+    const storageKey = 'lingua-custom-cards-v2';
+    const now = new Date();
+    const dayKey = [now.getFullYear(), String(now.getMonth() + 1).padStart(2, '0'), String(now.getDate()).padStart(2, '0')].join('-');
+    let saved = {};
+    try { saved = JSON.parse(localStorage.getItem(storageKey) || '{}'); } catch (e) { saved = {}; }
+    let cards = Array.isArray(saved.cards) ? saved.cards.filter(c => c && c.id && c.en && c.ru) : [];
+    let knownIds = new Set(Array.isArray(saved.knownIds) ? saved.knownIds : []);
+    let todayCount = saved.dayKey === dayKey ? (Number(saved.todayCount) || 0) : 0;
+    let cardIndex = 0, quizIndex = 0, quizScore = 0, quizLocked = false;
+    let quizOrder = [], matchItems = [], matchSelected = [], matchFound = 0, audioOn = true, toastTimer;
+    let miniOrder = [], miniIndex = 0, miniScore = 0, miniLocked = false, miniMode = '', letterBank = [], selectedLetters = [], truthExpected = false;
+    const views = ['home', 'cards', 'test', 'match'];
+    const $ = s => document.querySelector(s);
+    const $$ = s => Array.from(document.querySelectorAll(s));
+    const escapeHtml = value => String(value == null ? '' : value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    function shuffle(list) {
+      const result = list.slice();
+      for (let i = result.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [result[i], result[j]] = [result[j], result[i]];
+      }
+      return result;
+    }
+    const normalizeEnglish = value => String(value || '').toLocaleLowerCase('en-US').replace(/[^a-z0-9]/g, '');
+    const normalize = value => String(value || '').trim().toLocaleLowerCase('ru-RU').replace(/[.,!?;:]+$/g, '');
+    function persist() {
+      try { localStorage.setItem(storageKey, JSON.stringify({cards:cards, knownIds:Array.from(knownIds), todayCount:todayCount, dayKey:dayKey})); } catch (e) {}
+    }
+    function updateStats() {
+      const total = cards.length;
+      const knownCount = cards.filter(c => knownIds.has(c.id)).length;
+      const goal = Math.min(todayCount, 10);
+      $('#goal-count').textContent = goal + ' / 10';
+      $('#goal-fill').style.width = (goal * 10) + '%';
+      $('#learned-stat').textContent = goal;
+      $('#cards-stat').textContent = total;
+      $('#mastered-stat').textContent = knownCount + ' из ' + total;
+      $('#deck-fill').style.width = (total ? knownCount / total * 100 : 0) + '%';
+      $('#deck-progress-label').textContent = total ? knownCount + ' из ' + total + ' знакомы' : 'Добавьте первую карточку';
+      $('#owned-count').textContent = total + (total === 1 ? ' карточка' : total > 1 && total < 5 ? ' карточки' : ' карточек');
+      $('#nav-card-count').textContent = total;
+    }
+    function showToast(message) {
+      const el = $('#toast');
+      el.textContent = message;
+      el.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => el.classList.remove('show'), 2100);
+    }
+    function setView(view) {
+      views.forEach(v => $('#view-' + v).classList.toggle('hidden', v !== view));
+      $$('.nav-btn').forEach(b => b.classList.toggle('active', b.dataset.view === view));
+      $('#sidebar').classList.remove('open');
+      if (view === 'cards') renderLibrary();
+      if (view === 'test') startQuiz();
+      if (view === 'match') startMatch();
+      window.scrollTo({top:0, behavior:'smooth'});
+    }
+    function speak(text) {
+      if (!audioOn || !('speechSynthesis' in window)) return;
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'en-US';
+      utterance.rate = .88;
+      window.speechSynthesis.speak(utterance);
+    }
+    function emptyState(title, message, buttonId, buttonText) {
+      return '<div class="empty-state"><div class="empty-emoji">✍️</div><h2>' + escapeHtml(title) + '</h2><p>' + escapeHtml(message) + '</p><button class="small-primary" id="' + buttonId + '">' + escapeHtml(buttonText) + '</button></div>';
+    }
+    function renderLibrary() {
+      const rows = cards.map(card =>
+        '<article class="owned-card"><div class="owned-terms"><div class="owned-en">' + escapeHtml(card.en) + '</div><div class="owned-ru">' + escapeHtml(card.ru) + '</div>' +
+        (card.example ? '<div class="owned-example">“' + escapeHtml(card.example) + '”</div>' : '') +
+        '</div><div class="owned-actions"><button class="tiny-btn" data-edit="' + escapeHtml(card.id) + '">Изменить</button><button class="tiny-btn danger" data-delete="' + escapeHtml(card.id) + '">Удалить</button></div></article>'
+      ).join('');
+      const listContent = cards.length ? '<div class="owned-list">' + rows + '</div>' : emptyState('Пока нет карточек', 'Добавьте английское слово или фразу и свой перевод. Затем сможете учить их здесь.', 'empty-add', 'Создать первую карточку');
+      $('#view-cards').innerHTML =
+        '<div class="view-title"><h1>Мои карточки</h1><p>Ваш личный набор слов и фраз. Добавляйте, редактируйте и повторяйте его.</p></div>' +
+        '<div class="library-toolbar"><div class="library-count">В наборе: <strong>' + cards.length + '</strong></div><div class="library-actions">' +
+        '<button class="small-secondary" id="study-btn"' + (cards.length ? '' : ' disabled') + '>Учить карточки</button>' +
+        '<button class="small-secondary" id="test-btn"' + (cards.length ? '' : ' disabled') + '>Тест</button>' +
+        '<button class="small-secondary" id="match-btn"' + (cards.length < 1 ? ' disabled' : '') + '>Мини-игры</button>' +
+        '<button class="small-primary" id="add-card-btn">+ Добавить карточку</button></div></div>' +
+        '<div id="owned-list">' + listContent + '</div>' +
+        (cards.length === 1 ? '<p class="disabled-note">Для игр «Подбор пар» и «Верно или нет» добавьте ещё одну карточку. «Собери слово» доступна уже сейчас.</p>' : '');
+      $('#add-card-btn').onclick = () => showCardForm();
+      if ($('#empty-add')) $('#empty-add').onclick = () => showCardForm();
+      if ($('#study-btn')) $('#study-btn').onclick = () => { cardIndex = 0; renderStudy(); };
+      if ($('#test-btn')) $('#test-btn').onclick = () => setView('test');
+      if ($('#match-btn')) $('#match-btn').onclick = () => setView('match');
+      $$('[data-edit]').forEach(button => button.onclick = () => showCardForm(button.dataset.edit));
+      $$('[data-delete]').forEach(button => button.onclick = () => {
+        const card = cards.find(c => c.id === button.dataset.delete);
+        if (!card || !window.confirm('Удалить карточку «' + card.en + '»?')) return;
+        cards = cards.filter(c => c.id !== card.id);
+        knownIds.delete(card.id);
+        persist();
+        updateStats();
+        renderLibrary();
+        showToast('Карточка удалена');
+      });
+    }
+    function showCardForm(id) {
+      const card = id ? cards.find(c => c.id === id) : null;
+      const overlay = document.createElement('div');
+      overlay.className = 'modal-backdrop';
+      overlay.id = 'card-modal';
+      overlay.innerHTML =
+        '<form class="modal" id="card-form"><div class="modal-head"><div><h2>' + (card ? 'Изменить карточку' : 'Новая карточка') + '</h2><p>Заполните английскую сторону и перевод.</p></div><button type="button" class="modal-close" id="modal-close" aria-label="Закрыть">×</button></div>' +
+        '<div class="form-field"><label for="card-en">Слово или фраза на английском *</label><input id="card-en" maxlength="120" required placeholder="Введите своё слово или фразу" value="' + escapeHtml(card ? card.en : '') + '"></div>' +
+        '<div class="form-field"><label for="card-ru">Перевод *</label><input id="card-ru" maxlength="180" required placeholder="Введите свой перевод" value="' + escapeHtml(card ? card.ru : '') + '"></div>' +
+        '<div class="form-field"><label for="card-example">Пример предложения (необязательно)</label><textarea id="card-example" maxlength="260" placeholder="Добавьте свой пример, если нужно">' + escapeHtml(card ? card.example || '' : '') + '</textarea></div>' +
+        '<div class="modal-actions"><button type="button" class="small-secondary" id="cancel-card">Отмена</button><button type="submit" class="small-primary">Сохранить</button></div></form>';
+      document.body.appendChild(overlay);
+      const close = () => overlay.remove();
+      $('#modal-close').onclick = close;
+      $('#cancel-card').onclick = close;
+      overlay.addEventListener('click', e => { if (e.target === overlay) close(); });
+      $('#card-en').focus();
+      $('#card-form').addEventListener('submit', e => {
+        e.preventDefault();
+        const updated = {
+          id: card ? card.id : 'c' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
+          en: $('#card-en').value.trim(),
+          ru: $('#card-ru').value.trim(),
+          example: $('#card-example').value.trim()
+        };
+        if (!updated.en || !updated.ru) return;
+        if (card) cards = cards.map(c => c.id === card.id ? updated : c);
+        else cards.push(updated);
+        persist();
+        close();
+        updateStats();
+        renderLibrary();
+        showToast(card ? 'Изменения сохранены' : 'Карточка добавлена');
+      });
+    }
+    function renderStudy() {
+      if (!cards.length) { renderLibrary(); return; }
+      const card = cards[cardIndex % cards.length];
+      $('#view-cards').innerHTML =
+        '<div class="view-title"><h1>Учить карточки</h1><p>Вспомните перевод, затем откройте ответ.</p></div>' +
+        '<div class="study-shell"><div class="study-topline"><div class="study-type">МОЙ НАБОР</div><div class="counter">' + (cardIndex + 1) + ' / ' + cards.length + '</div></div>' +
+        '<div class="study-progress"><div style="width:' + ((cardIndex + 1) / cards.length * 100) + '%"></div></div>' +
+        '<div class="flashcard" id="flashcard" role="button" tabindex="0" aria-label="Нажмите, чтобы открыть перевод"><div class="word-type">МОЯ КАРТОЧКА</div>' +
+        '<button class="speaker" id="speak-card" aria-label="Прослушать слово"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4zM15.5 8.5a5 5 0 0 1 0 7"/></svg></button>' +
+        '<div class="word">' + escapeHtml(card.en) + '</div><div class="hint">Нажмите, чтобы увидеть перевод</div><div class="answer"><div class="answer-translation">' + escapeHtml(card.ru) + '</div>' +
+        (card.example ? '<div class="answer-example">“' + escapeHtml(card.example) + '”</div>' : '') +
+        '</div><div class="flip-label">ПЕРЕВЕРНУТЬ КАРТОЧКУ</div></div>' +
+        '<div class="flash-controls"><button class="control-btn" id="back-library">К моим карточкам</button><button class="control-btn" id="again-card">Повторить</button><button class="control-btn success" id="known-card">Знаю ✓</button><button class="control-btn" id="next-card">Дальше →</button></div></div>';
+      const flip = () => $('#flashcard').classList.toggle('revealed');
+      $('#flashcard').addEventListener('click', e => { if (!e.target.closest('button')) flip(); });
+      $('#flashcard').addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); flip(); } });
+      $('#speak-card').onclick = e => { e.stopPropagation(); speak(card.en); };
+      $('#back-library').onclick = renderLibrary;
+      $('#again-card').onclick = () => { cardIndex = (cardIndex + 1) % cards.length; showToast('Вернёмся к этой карточке позже'); renderStudy(); };
+      $('#next-card').onclick = () => { cardIndex = (cardIndex + 1) % cards.length; renderStudy(); };
+      $('#known-card').onclick = () => {
+        knownIds.add(card.id);
+        todayCount = Math.min(10, todayCount + 1);
+        persist();
+        updateStats();
+        showToast('Отлично! Карточка отмечена как знакомая');
+        cardIndex = (cardIndex + 1) % cards.length;
+        renderStudy();
+      };
+    }
+    function startQuiz() {
+      if (!cards.length) { renderQuizEmpty(); return; }
+      const nextOrder = shuffle(cards.map((_, i) => i)).slice(0, Math.min(cards.length, 10));
+      if (nextOrder.length > 1 && nextOrder.join(',') === quizOrder.join(',')) nextOrder.push(nextOrder.shift());
+      quizOrder = nextOrder;
+      quizIndex = 0;
+      quizScore = 0;
+      quizLocked = false;
+      renderQuizQuestion();
+    }
+    function renderQuizEmpty() {
+      $('#view-test').innerHTML = '<div class="view-title"><h1>Тест по моим карточкам</h1><p>Вопросы будут составлены из вашего набора.</p></div>' +
+        '<div class="finish-card">' + emptyState('Сначала создайте карточки', 'Добавьте хотя бы одно слово, чтобы начать тест по собственному набору.', 'quiz-add-card', 'Создать карточку') + '</div>';
+      $('#quiz-add-card').onclick = () => { setView('cards'); showCardForm(); };
+    }
+    function renderQuizQuestion() {
+      if (quizIndex >= quizOrder.length) {
+        $('#view-test').innerHTML = '<div class="view-title"><h1>Тест по моим карточкам</h1><p>Ваш результат по личному набору.</p></div><div class="finish-card"><div class="finish-emoji">' + (quizScore === quizOrder.length ? '🎉' : '🌱') + '</div><h2>' + (quizScore === quizOrder.length ? 'Отличная работа!' : 'Хорошая практика!') + '</h2><p>Правильных ответов: <strong>' + quizScore + ' из ' + quizOrder.length + '</strong>.</p><button class="small-primary" id="restart-quiz">Пройти ещё раз</button> <button class="small-secondary" id="quiz-to-cards">Мои карточки</button></div>';
+        $('#restart-quiz').onclick = startQuiz;
+        $('#quiz-to-cards').onclick = () => setView('cards');
+        return;
+      }
+      const index = quizOrder[quizIndex];
+      const card = cards[index];
+      const candidateIndexes = shuffle(cards.map((_, i) => i).filter(i => i !== index && normalize(cards[i].ru) !== normalize(card.ru)));
+      const options = shuffle([index].concat(candidateIndexes.slice(0, 3)));
+      const useChoices = options.length > 1;
+      quizLocked = false;
+      const questionBody = useChoices
+        ? '<div class="quiz-choices">' + options.map((i, n) => '<button class="choice" data-answer="' + i + '"><span class="choice-letter">' + String.fromCharCode(65 + n) + '</span>' + escapeHtml(cards[i].ru) + '</button>').join('') + '</div>'
+        : '<form class="quiz-input" id="typed-answer"><input id="answer-input" autocomplete="off" required placeholder="Введите перевод"><button class="small-primary" type="submit">Проверить</button></form>';
+      $('#view-test').innerHTML = '<div class="view-title"><h1>Тест по моим карточкам</h1><p>Выберите или введите перевод своей карточки.</p></div><div class="quiz-shell"><div class="study-topline"><div class="study-type">ВОПРОС ' + (quizIndex + 1) + '</div><div class="counter">' + (quizIndex + 1) + ' / ' + quizOrder.length + '</div></div><div class="study-progress"><div style="width:' + ((quizIndex + 1) / quizOrder.length * 100) + '%"></div></div><div class="quiz-card"><div class="quiz-question-label">КАК ПЕРЕВОДИТСЯ</div><div class="quiz-question">' + escapeHtml(card.en) + '</div>' + questionBody + '<div class="quiz-feedback" id="quiz-feedback"></div><div class="quiz-bottom"><button class="small-secondary" id="quit-quiz">Мои карточки</button><button class="small-primary hidden" id="next-question">Дальше →</button></div></div></div>';
+      function answerQuestion(correct, selectedButton) {
+        if (quizLocked) return;
+        quizLocked = true;
+        if (correct) {
+          quizScore++;
+          knownIds.add(card.id);
+          todayCount = Math.min(10, todayCount + 1);
+          persist();
+          updateStats();
+        }
+        if (useChoices) {
+          $$('.choice').forEach(button => {
+            button.disabled = true;
+            if (Number(button.dataset.answer) === index) button.classList.add('correct');
+          });
+          if (!correct && selectedButton) selectedButton.classList.add('wrong');
+        }
+        $('#quiz-feedback').textContent = correct ? 'Верно! Это перевод из вашей карточки.' : 'Правильный ответ: ' + card.ru;
+        $('#quiz-feedback').style.color = correct ? '#286340' : '#a34f43';
+        $('#next-question').classList.remove('hidden');
+      }
+      if (useChoices) {
+        $$('.choice').forEach(button => button.onclick = () => answerQuestion(Number(button.dataset.answer) === index, button));
+      } else {
+        $('#typed-answer').onsubmit = e => { e.preventDefault(); answerQuestion(normalize($('#answer-input').value) === normalize(card.ru), null); };
+      }
+      $('#next-question').onclick = () => { quizIndex++; renderQuizQuestion(); };
+      $('#quit-quiz').onclick = () => setView('cards');
+    }
+    function startMatch() { renderGameHub(); }
+    function renderGameHub() {
+      if (!cards.length) {
+        $('#view-match').innerHTML = '<div class="view-title"><h1>Мини-игры</h1><p>Игры будут собраны из ваших карточек.</p></div><div class="finish-card">' + emptyState('Пока нечего повторять', 'Добавьте свои слова и переводы — и они появятся во всех игровых режимах.', 'game-add-card', 'Создать карточку') + '</div>';
+        $('#game-add-card').onclick = () => { setView('cards'); showCardForm(); };
+        return;
+      }
+      const pairDisabled = cards.length < 2 ? ' disabled' : '';
+      const pairNote = cards.length < 2 ? '<div class="disabled-note">Добавьте вторую карточку, чтобы играть.</div>' : '';
+      $('#view-match').innerHTML =
+        '<div class="view-title"><h1>Мини-игры</h1><p>Выберите режим. Все задания используют только карточки из вашего набора (' + cards.length + ').</p></div>' +
+        '<div class="game-options">' +
+        '<section class="game-option"><div class="game-emoji">🧩</div><h3>Подбор пар</h3><p>Соедините каждое английское слово с вашим переводом.</p><button class="small-primary" id="play-pairs"' + pairDisabled + '>Играть</button>' + pairNote + '</section>' +
+        '<section class="game-option"><div class="game-emoji">🔤</div><h3>Собери слово</h3><p>По переводу соберите английское слово из перемешанных букв.</p><button class="small-primary" id="play-build">Играть</button></section>' +
+        '<section class="game-option"><div class="game-emoji">✅</div><h3>Верно или нет</h3><p>Решите, подходит ли показанный перевод к слову.</p><button class="small-primary" id="play-truth"' + pairDisabled + '>Играть</button>' + pairNote + '</section>' +
+        '</div><div class="text-center"><button class="small-secondary" id="games-to-cards">Мои карточки</button></div>';
+      $('#play-pairs').onclick = startPairGame;
+      $('#play-build').onclick = startBuildGame;
+      $('#play-truth').onclick = startTruthGame;
+      $('#games-to-cards').onclick = () => setView('cards');
+    }
+    function renderGameHeader(title, description, count, total) {
+      return '<div class="view-title"><div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px"><div><h1>' + escapeHtml(title) + '</h1><p>' + escapeHtml(description) + '</p></div><button class="text-btn" id="back-games">← Все игры</button></div></div>' +
+        '<div class="study-topline"><div class="study-type">МОЙ НАБОР</div><div class="counter" id="game-progress">' + count + ' / ' + total + '</div></div>' +
+        '<div class="study-progress"><div style="width:' + (count / total * 100) + '%"></div></div>';
+    }
+    function finishMiniGame(title, emoji, description, replay) {
+      $('#view-match').innerHTML = '<div class="view-title"><h1>Мини-игры</h1><p>Результат по вашим карточкам.</p></div><div class="finish-card"><div class="finish-emoji">' + emoji + '</div><h2>' + escapeHtml(title) + '</h2><p>' + escapeHtml(description) + '</p><button class="small-primary" id="replay-mini">Сыграть ещё</button> <button class="small-secondary" id="finish-all-games">Все игры</button></div>';
+      $('#replay-mini').onclick = replay;
+      $('#finish-all-games').onclick = renderGameHub;
+    }
+    function startPairGame() {
+      if (cards.length < 2) { renderGameHub(); return; }
+      matchItems = shuffle(cards.map((card, index) => ({card:card, index:index}))).slice(0, 6);
+      matchSelected = [];
+      matchFound = 0;
+      const tiles = [];
+      matchItems.forEach(item => {
+        tiles.push({id:item.card.id, side:'en', text:item.card.en});
+        tiles.push({id:item.card.id, side:'ru', text:item.card.ru});
+      });
+      const mixed = shuffle(tiles);
+      $('#view-match').innerHTML = renderGameHeader('Подбор пар', 'Сопоставьте английские слова и ваши переводы.', 0, matchItems.length) +
+        '<div class="match-shell"><div class="match-head"><div class="match-status">Найдено пар: <strong id="match-count">0 из ' + matchItems.length + '</strong></div><button class="text-btn" id="reshuffle-match">Перемешать</button></div><div class="match-grid">' +
+        mixed.map((item, i) => '<button class="match-tile" data-card-id="' + escapeHtml(item.id) + '" data-side="' + item.side + '" data-id="' + i + '">' + escapeHtml(item.text) + '</button>').join('') +
+        '</div><div class="text-center" style="margin-top:20px"><button class="small-secondary" id="exit-match">Все игры</button></div></div>';
+      $$('.match-tile').forEach(tile => tile.onclick = () => selectTile(tile));
+      $('#reshuffle-match').onclick = startPairGame;
+      $('#exit-match').onclick = renderGameHub;
+      $('#back-games').onclick = renderGameHub;
+    }
+    function selectTile(tile) {
+      if (tile.classList.contains('matched') || tile.classList.contains('selected') || matchSelected.length >= 2) return;
+      tile.classList.add('selected');
+      matchSelected.push(tile);
+      if (matchSelected.length !== 2) return;
+      const first = matchSelected[0], second = matchSelected[1];
+      if (first.dataset.cardId === second.dataset.cardId && first.dataset.side !== second.dataset.side) {
+        setTimeout(() => {
+          first.classList.remove('selected');
+          second.classList.remove('selected');
+          first.classList.add('matched');
+          second.classList.add('matched');
+          matchFound++;
+          const card = cards.find(c => c.id === first.dataset.cardId);
+          if (card) knownIds.add(card.id);
+          todayCount = Math.min(10, todayCount + 1);
+          persist();
+          updateStats();
+          $('#game-progress').textContent = matchFound + ' / ' + matchItems.length;
+          $('#match-count').textContent = matchFound + ' из ' + matchItems.length;
+          matchSelected = [];
+          if (matchFound === matchItems.length) {
+            setTimeout(() => finishMiniGame('Все пары собраны!', '🏆', 'Вы сопоставили ' + matchFound + ' пар.', startPairGame), 250);
+          }
+        }, 160);
+      } else {
+        first.classList.add('mismatch');
+        second.classList.add('mismatch');
+        setTimeout(() => {
+          first.classList.remove('selected', 'mismatch');
+          second.classList.remove('selected', 'mismatch');
+          matchSelected = [];
+        }, 600);
+      }
+    }
+    function startBuildGame() {
+      miniMode = 'build';
+      miniOrder = shuffle(cards.map((card, index) => index).filter(index => normalizeEnglish(cards[index].en).length > 0)).slice(0, 10);
+      if (!miniOrder.length) { renderGameHub(); showToast('В карточках нет английских букв для этой игры'); return; }
+      miniIndex = 0;
+      miniScore = 0;
+      renderBuildQuestion();
+    }
+    function renderBuildQuestion() {
+      if (miniIndex >= miniOrder.length) {
+        finishMiniGame('Раунд завершён', '🔤', 'Вы собрали ' + miniScore + ' из ' + miniOrder.length + ' слов.', startBuildGame);
+        return;
+      }
+      const card = cards[miniOrder[miniIndex]];
+      letterBank = shuffle(Array.from(normalizeEnglish(card.en))).map((letter, index) => ({id:index, letter:letter}));
+      selectedLetters = [];
+      miniLocked = false;
+      $('#view-match').innerHTML = renderGameHeader('Собери слово', 'Соберите английскую карточку по русскому переводу. Пробелы и знаки добавятся автоматически.', miniIndex + 1, miniOrder.length) +
+        '<div class="quiz-shell"><div class="quiz-card"><div class="quiz-question-label">АНГЛИЙСКОЕ СЛОВО ДЛЯ ПЕРЕВОДА</div><div class="quiz-question">' + escapeHtml(card.ru) + '</div>' +
+        '<div class="letter-answer" id="letter-answer"><span class="placeholder">Нажимайте буквы по порядку</span></div><div class="letter-bank" id="letter-bank"></div>' +
+        '<div class="mini-feedback" id="build-feedback"></div><div class="quiz-bottom"><button class="small-secondary" id="build-reset">Сбросить</button><div><button class="small-primary" id="check-word">Проверить</button><button class="small-primary hidden" id="next-build">Дальше →</button></div></div></div></div>';
+      $('#back-games').onclick = renderGameHub;
+      $('#build-reset').onclick = () => { if (!miniLocked) { selectedLetters = []; renderLetterBoard(); } };
+      $('#check-word').onclick = checkBuiltWord;
+      $('#next-build').onclick = () => { miniIndex++; renderBuildQuestion(); };
+      renderLetterBoard();
+    }
+    function renderLetterBoard() {
+      const chosen = selectedLetters.map(id => letterBank.find(item => item.id === id).letter).join('');
+      $('#letter-answer').innerHTML = chosen ? escapeHtml(chosen.split('').join(' ')) : '<span class="placeholder">Нажимайте буквы по порядку</span>';
+      $('#letter-bank').innerHTML = letterBank.map(item => '<button class="letter-tile' + (selectedLetters.includes(item.id) ? ' used' : '') + '" data-letter-id="' + item.id + '"' + (selectedLetters.includes(item.id) || miniLocked ? ' disabled' : '') + '>' + escapeHtml(item.letter) + '</button>').join('');
+      $$('.letter-tile').forEach(button => button.onclick = () => {
+        if (miniLocked || selectedLetters.includes(Number(button.dataset.letterId))) return;
+        selectedLetters.push(Number(button.dataset.letterId));
+        renderLetterBoard();
+      });
+    }
+    function checkBuiltWord() {
+      if (miniLocked || !selectedLetters.length) return;
+      const answer = selectedLetters.map(id => letterBank.find(item => item.id === id).letter).join('');
+      const card = cards[miniOrder[miniIndex]];
+      const correct = answer === normalizeEnglish(card.en);
+      miniLocked = true;
+      if (correct) {
+        miniScore++;
+        knownIds.add(card.id);
+        todayCount = Math.min(10, todayCount + 1);
+        persist();
+        updateStats();
+      }
+      $('#build-feedback').textContent = correct ? 'Верно! Отлично собрали слово.' : 'Правильный ответ: ' + card.en;
+      $('#build-feedback').style.color = correct ? '#286340' : '#a34f43';
+      $('#check-word').classList.add('hidden');
+      $('#build-reset').classList.add('hidden');
+      $('#next-build').classList.remove('hidden');
+      renderLetterBoard();
+    }
+    function startTruthGame() {
+      if (cards.length < 2) { renderGameHub(); return; }
+      miniMode = 'truth';
+      miniOrder = shuffle(cards.map((_, index) => index)).slice(0, Math.min(cards.length, 10));
+      miniIndex = 0;
+      miniScore = 0;
+      renderTruthQuestion();
+    }
+    function renderTruthQuestion() {
+      if (miniIndex >= miniOrder.length) {
+        finishMiniGame('Раунд завершён', '✅', 'Вы правильно определили ' + miniScore + ' из ' + miniOrder.length + ' ответов.', startTruthGame);
+        return;
+      }
+      const card = cards[miniOrder[miniIndex]];
+      const otherTranslations = cards.map((item, index) => ({item:item, index:index})).filter(row => row.index !== miniOrder[miniIndex] && normalize(row.item.ru) !== normalize(card.ru));
+      truthExpected = Math.random() < .5 || !otherTranslations.length;
+      const shownTranslation = truthExpected ? card.ru : otherTranslations[Math.floor(Math.random() * otherTranslations.length)].item.ru;
+      miniLocked = false;
+      $('#view-match').innerHTML = renderGameHeader('Верно или нет', 'Проверьте, совпадает ли перевод с английской карточкой.', miniIndex + 1, miniOrder.length) +
+        '<div class="quiz-shell"><div class="binary-prompt"><div class="quiz-question-label">ЭТОТ ПЕРЕВОД ПОДХОДИТ?</div><div class="binary-word">' + escapeHtml(card.en) + '</div><div class="binary-translation">' + escapeHtml(shownTranslation) + '</div><div class="binary-controls"><button class="small-primary" id="truth-yes">Да, верно</button><button class="small-secondary" id="truth-no">Нет, другой перевод</button></div><div class="mini-feedback" id="truth-feedback"></div><div style="margin-top:18px"><button class="small-primary hidden" id="next-truth">Дальше →</button></div></div></div>';
+      $('#back-games').onclick = renderGameHub;
+      $('#truth-yes').onclick = () => answerTruth(true, card);
+      $('#truth-no').onclick = () => answerTruth(false, card);
+      $('#next-truth').onclick = () => { miniIndex++; renderTruthQuestion(); };
+    }
+    function answerTruth(answer, card) {
+      if (miniLocked) return;
+      miniLocked = true;
+      const correct = answer === truthExpected;
+      if (correct) {
+        miniScore++;
+        knownIds.add(card.id);
+        todayCount = Math.min(10, todayCount + 1);
+        persist();
+        updateStats();
+      }
+      $('#truth-yes').disabled = true;
+      $('#truth-no').disabled = true;
+      $('#truth-feedback').textContent = (correct ? 'Верно! ' : 'Не совсем. ') + 'Перевод карточки: ' + card.ru;
+      $('#truth-feedback').style.color = correct ? '#286340' : '#a34f43';
+      $('#next-truth').classList.remove('hidden');
+    }    $$('.nav-btn').forEach(button => button.addEventListener('click', () => setView(button.dataset.view)));
+    document.addEventListener('click', event => {
+      const button = event.target.closest('[data-go]');
+      if (button) setView(button.dataset.go);
+    });
+    $('#menu-toggle').addEventListener('click', () => $('#sidebar').classList.toggle('open'));
+    $('#sound-toggle').addEventListener('click', () => {
+      audioOn = !audioOn;
+      $('#sound-toggle').style.color = audioOn ? '#78847a' : '#c08b72';
+      $('#sound-toggle').setAttribute('aria-label', audioOn ? 'Озвучивание включено' : 'Озвучивание выключено');
+      showToast(audioOn ? 'Озвучивание включено' : 'Озвучивание выключено');
+    });
+    $('#today-date').textContent = now.toLocaleDateString('ru-RU', {weekday:'long', day:'numeric', month:'long'}).toLocaleUpperCase('ru-RU');
+    updateStats();
+    if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
+      window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => {}));
+    }
+  </script>
+</body>
+</html>
+
