@@ -1,4 +1,4 @@
-const CACHE_NAME = 'lingua-static-v2';
+const CACHE_NAME = 'lingua-static-v3';
 const APP_FILES = ['./', './index.html', './manifest.webmanifest', './icon.svg'];
 
 self.addEventListener('install', event => {
