@@ -1,14 +1,14 @@
 {
   "id": "./",
-  "name": "Lingua — мой английский",
-  "short_name": "Lingua",
+  "name": "Leximo — английский по твоим карточкам",
+  "short_name": "Leximo",
   "description": "Карточки, тесты и мини-игры для изучения английского.",
   "lang": "ru",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#f5f6f1",
-  "theme_color": "#204d38",
+  "background_color": "#f1f6f7",
+  "theme_color": "#246c68",
   "icons": [
     {
       "src": "./icon.svg",
@@ -18,4 +18,3 @@
     }
   ]
 }
-
