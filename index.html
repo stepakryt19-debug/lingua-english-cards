@@ -40,6 +40,12 @@
   button:focus-visible{outline-color:#77aaa4}
   @media(max-width:760px){.sidebar{width:270px}.brand{padding:0 12px 34px}.hero{background:var(--mint)}.content{background:var(--canvas)}}
 </style>
+<style>
+.memory-shell{max-width:850px;margin:26px auto}.memory-board{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:11px;margin-top:15px}.memory-tile{min-width:0;min-height:96px;padding:12px;border:1px solid var(--line);border-radius:15px;background:var(--mint);color:var(--green-dark);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;transition:transform .16s,border-color .16s,background .16s}.memory-tile:hover:not(:disabled){transform:translateY(-2px);border-color:#9dc4be}.memory-back{font-size:25px;font-weight:800;opacity:.7}.memory-tile.revealed{background:var(--paper);box-shadow:0 6px 18px rgba(24,55,70,.06)}.memory-tile[data-side="ru"].revealed{background:#f6efd9}.memory-side{color:var(--muted);font-size:9px;font-weight:800;letter-spacing:1px}.memory-face{font-size:12px;font-weight:750;overflow-wrap:anywhere}.memory-tile.matched{background:#e5f1ee;border-color:#c3ddd8;color:var(--green-dark);pointer-events:none}.memory-tile.wrong{border-color:#d59187;background:#fff6f3}.memory-separator{margin:0 8px;color:var(--muted)}
+.sprint-shell{max-width:700px;margin:22px auto}.sprint-clock-row{display:flex;align-items:center;justify-content:space-between;margin:14px auto 9px;max-width:700px}.sprint-clock{padding:7px 12px;border-radius:999px;background:var(--mint);color:var(--green-dark);font-size:12px}.sprint-progress{max-width:700px;margin:0 auto 18px}.sprint-progress #sprint-progress{background:var(--green);transition:width .3s linear}.sprint-progress #sprint-progress.urgent{background:var(--coral)}.sprint-scoreline{display:flex;gap:7px;align-items:center;justify-content:flex-end;color:var(--muted);font-size:11px;margin-bottom:9px}.sprint-scoreline strong{color:var(--green-dark)}.sprint-card{padding:28px;border:1px solid var(--line);border-radius:19px;background:var(--paper);box-shadow:var(--shadow)}.sprint-word{margin:9px 0 24px;font-size:32px;font-weight:850;letter-spacing:-1px}.sprint-card form label{display:block;margin-bottom:7px;font-size:11px;font-weight:750}.sprint-entry{display:flex;gap:8px;align-items:center}.sprint-entry input{min-width:0;flex:1;height:44px;padding:0 13px;border:1px solid var(--line);border-radius:11px;background:var(--paper);color:var(--ink);font:inherit;font-size:14px}.sprint-entry input:focus{outline:2px solid #87b5ae;outline-offset:1px}.sprint-entry button{min-height:44px;white-space:nowrap}.sprint-card .mini-feedback{min-height:24px}
+@media(max-width:760px){.memory-board{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.memory-tile{min-height:78px;padding:8px}.memory-face{font-size:11px}.sprint-shell{margin-top:18px}.sprint-card{padding:22px}}
+@media(max-width:430px){.memory-board{grid-template-columns:repeat(2,minmax(0,1fr))}.memory-tile{min-height:72px}.match-status{font-size:10px}.memory-separator{margin:0 4px}.sprint-entry{align-items:stretch;flex-wrap:wrap}.sprint-entry input{flex-basis:100%}.sprint-entry button{flex:1}.sprint-word{font-size:28px}}
+</style>
 </head>
 <body>
   <div class="app">
@@ -65,7 +71,7 @@
         <section class="stats" aria-label="Статистика обучения"><div class="stat-card"><div class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M17 7.5c0-1.7-2.2-3-5-3s-5 1.3-5 3 2.2 3 5 3 5 1.3 5 3-2.2 3-5 3-5-1.3-5-3"/></svg></div><div><div class="stat-value" id="learned-stat">0</div><div class="stat-label">карточек повторено сегодня</div></div></div><div class="stat-card"><div class="stat-icon yellow"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 9h8M8 13h8M8 17h4"/></svg></div><div><div class="stat-value" id="cards-stat">0</div><div class="stat-label">ваших карточек в наборе</div></div></div><div class="stat-card"><div class="stat-icon pink"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V5M4 19h17"/><path d="m7 15 4-4 3 2 6-7"/></svg></div><div><div class="stat-value" id="mastered-stat">0 из 0</div><div class="stat-label">карточек уже знаю</div></div></div></section>
         <div class="section-head"><h3>Мои карточки</h3><button class="text-btn" data-go="cards">Открыть набор <span aria-hidden="true">→</span></button></div>
         <div class="lower-grid"><section class="deck-card"><div class="deck-top"><div class="deck-symbol"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v16H6.5A2.5 2.5 0 0 0 4 21z"/><path d="M4 5.5v13M8 7h8M8 11h7"/></svg></div><span class="level-tag">ВАШ НАБОР</span></div><div class="deck-title">Мои слова и фразы</div><div class="deck-meta"><span id="owned-count">0 карточек</span><span class="dot"></span><span>Создайте свой словарь</span></div><div class="deck-progress"><div class="progress-track"><div class="progress-fill" id="deck-fill"></div></div><small id="deck-progress-label">Добавьте первую карточку</small></div><div class="deck-actions"><button class="small-primary" data-go="cards">Добавить карточку</button><button class="small-secondary" data-go="test">Начать тест</button></div></section><section class="challenge-card"><div class="challenge-label">МИНИ-ИГРЫ</div><h4>Выберите способ повторить слова</h4><p>Соберите пары, составьте слово или сыграйте в «Верно или нет».</p><button class="challenge-link" data-go="match">Выбрать игру →</button></section></div>
-        <div class="mode-row"><button class="mode-chip" data-go="cards"><span class="mode-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="14" height="16" rx="2"/><path d="M8 9h6M8 13h6"/></svg></span><span><strong>Карточки</strong><span>Учи в своём темпе</span></span><b class="chevron">›</b></button><button class="mode-chip" data-go="test"><span class="mode-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 4 4L19 6"/></svg></span><span><strong>Проверка знаний</strong><span>Выбери верный ответ</span></span><b class="chevron">›</b></button><button class="mode-chip" data-go="match"><span class="mode-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10M7 12h10M7 17h10"/></svg></span><span><strong>Мини-игры</strong><span>Три игровых режима</span></span><b class="chevron">›</b></button></div>
+        <div class="mode-row"><button class="mode-chip" data-go="cards"><span class="mode-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="14" height="16" rx="2"/><path d="M8 9h6M8 13h6"/></svg></span><span><strong>Карточки</strong><span>Учи в своём темпе</span></span><b class="chevron">›</b></button><button class="mode-chip" data-go="test"><span class="mode-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 4 4L19 6"/></svg></span><span><strong>Проверка знаний</strong><span>Выбери верный ответ</span></span><b class="chevron">›</b></button><button class="mode-chip" data-go="match"><span class="mode-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10M7 12h10M7 17h10"/></svg></span><span><strong>Мини-игры</strong><span>Пять игровых режимов</span></span><b class="chevron">›</b></button></div>
       </div>
       <div class="page hidden" id="view-cards"></div><div class="page hidden" id="view-test"></div><div class="page hidden" id="view-match"></div>
     </main>
@@ -83,6 +89,8 @@
     let cardIndex = 0, quizIndex = 0, quizScore = 0, quizLocked = false;
     let quizOrder = [], matchItems = [], matchSelected = [], matchFound = 0, audioOn = true, toastTimer;
     let miniOrder = [], miniIndex = 0, miniScore = 0, miniLocked = false, miniMode = '', letterBank = [], selectedLetters = [], truthExpected = false;
+    let memoryItems = [], memoryDeck = [], memoryFlipped = [], memoryFound = 0, memoryMoves = 0, memoryBusy = false, memoryRound = 0;
+    let sprintDeck = [], sprintIndex = 0, sprintScore = 0, sprintErrors = 0, sprintTimeLeft = 45, sprintTimer = null, sprintLocked = false;
     const views = ['home', 'cards', 'test', 'match'];
     const $ = s => document.querySelector(s);
     const $$ = s => Array.from(document.querySelectorAll(s));
@@ -122,6 +130,7 @@
       toastTimer = setTimeout(() => el.classList.remove('show'), 2100);
     }
     function setView(view) {
+      if (view !== 'match') { memoryRound++; memoryBusy = false; if (sprintTimer) { clearInterval(sprintTimer); sprintTimer = null; } }
       views.forEach(v => $('#view-' + v).classList.toggle('hidden', v !== view));
       $$('.nav-btn').forEach(b => b.classList.toggle('active', b.dataset.view === view));
       $('#sidebar').classList.remove('open');
@@ -156,7 +165,7 @@
         '<button class="small-secondary" id="match-btn"' + (cards.length < 1 ? ' disabled' : '') + '>Мини-игры</button>' +
         '<button class="small-primary" id="add-card-btn">+ Добавить карточку</button></div></div>' +
         '<div id="owned-list">' + listContent + '</div>' +
-        (cards.length === 1 ? '<p class="disabled-note">Для игр «Подбор пар» и «Верно или нет» добавьте ещё одну карточку. «Собери слово» доступна уже сейчас.</p>' : '');
+        (cards.length === 1 ? '<p class="disabled-note">Для игр «Подбор пар», «Память» и «Верно или нет» добавьте ещё одну карточку. Остальные режимы уже доступны.</p>' : '');
       $('#add-card-btn').onclick = () => showCardForm();
       if ($('#empty-add')) $('#empty-add').onclick = () => showCardForm();
       if ($('#study-btn')) $('#study-btn').onclick = () => { cardIndex = 0; renderStudy(); };
@@ -302,6 +311,9 @@
     }
     function startMatch() { renderGameHub(); }
     function renderGameHub() {
+      if (sprintTimer) { clearInterval(sprintTimer); sprintTimer = null; }
+      memoryRound++;
+      memoryBusy = false;
       if (!cards.length) {
         $('#view-match').innerHTML = '<div class="view-title"><h1>Мини-игры</h1><p>Игры будут собраны из ваших карточек.</p></div><div class="finish-card">' + emptyState('Пока нечего повторять', 'Добавьте свои слова и переводы — и они появятся во всех игровых режимах.', 'game-add-card', 'Создать карточку') + '</div>';
         $('#game-add-card').onclick = () => { setView('cards'); showCardForm(); };
@@ -315,10 +327,14 @@
         '<section class="game-option"><div class="game-emoji">🧩</div><h3>Подбор пар</h3><p>Соедините каждое английское слово с вашим переводом.</p><button class="small-primary" id="play-pairs"' + pairDisabled + '>Играть</button>' + pairNote + '</section>' +
         '<section class="game-option"><div class="game-emoji">🔤</div><h3>Собери слово</h3><p>По переводу соберите английское слово из перемешанных букв.</p><button class="small-primary" id="play-build">Играть</button></section>' +
         '<section class="game-option"><div class="game-emoji">✅</div><h3>Верно или нет</h3><p>Решите, подходит ли показанный перевод к слову.</p><button class="small-primary" id="play-truth"' + pairDisabled + '>Играть</button>' + pairNote + '</section>' +
+        '<section class="game-option"><div class="game-emoji">🧠</div><h3>Память</h3><p>Переворачивайте карточки и находите пары слов с переводами.</p><button class="small-primary" id="play-memory"' + pairDisabled + '>Играть</button>' + pairNote + '</section>' +
+        '<section class="game-option"><div class="game-emoji">⏱️</div><h3>Спринт перевода</h3><p>За 45 секунд введи как можно больше переводов из своих карточек.</p><button class="small-primary" id="play-sprint">Играть</button></section>' +
         '</div><div class="text-center"><button class="small-secondary" id="games-to-cards">Мои карточки</button></div>';
       $('#play-pairs').onclick = startPairGame;
       $('#play-build').onclick = startBuildGame;
       $('#play-truth').onclick = startTruthGame;
+      $('#play-memory').onclick = startMemoryGame;
+      $('#play-sprint').onclick = startSprintGame;
       $('#games-to-cards').onclick = () => setView('cards');
     }
     function renderGameHeader(title, description, count, total) {
@@ -484,6 +500,153 @@
       $('#truth-feedback').textContent = (correct ? 'Верно! ' : 'Не совсем. ') + 'Перевод карточки: ' + card.ru;
       $('#truth-feedback').style.color = correct ? '#286340' : '#a34f43';
       $('#next-truth').classList.remove('hidden');
+    }    function startMemoryGame() {
+      if (cards.length < 2) { renderGameHub(); return; }
+      memoryRound++;
+      memoryItems = shuffle(cards).slice(0, Math.min(cards.length, 6));
+      memoryDeck = shuffle(memoryItems.flatMap(card => [
+        {cardId:card.id, side:'en', text:card.en},
+        {cardId:card.id, side:'ru', text:card.ru}
+      ]));
+      memoryFlipped = [];
+      memoryFound = 0;
+      memoryMoves = 0;
+      memoryBusy = false;
+      $('#view-match').innerHTML = renderGameHeader('Память', 'Найди пары: английское слово и его перевод.', 0, memoryItems.length) +
+        '<div class="memory-shell"><div class="match-head"><div class="match-status">Найдено пар: <strong id="memory-pairs">0 из ' + memoryItems.length + '</strong><span class="memory-separator">·</span>Ходы: <strong id="memory-moves">0</strong></div><button class="text-btn" id="memory-reshuffle">Перемешать</button></div><div class="memory-board" id="memory-board">' +
+        memoryDeck.map((item, index) => '<button class="memory-tile" data-card-id="' + escapeHtml(item.cardId) + '" data-side="' + item.side + '" data-face="' + escapeHtml(item.text) + '" data-slot="' + index + '" aria-label="Закрытая карточка"><span class="memory-back" aria-hidden="true">?</span></button>').join('') +
+        '</div><div class="text-center" style="margin-top:20px"><button class="small-secondary" id="exit-memory">Все игры</button></div></div>';
+      $$('.memory-tile').forEach(tile => tile.onclick = () => selectMemoryTile(tile));
+      $('#memory-reshuffle').onclick = startMemoryGame;
+      $('#exit-memory').onclick = renderGameHub;
+      $('#back-games').onclick = renderGameHub;
+    }
+    function revealMemoryTile(tile) {
+      tile.classList.add('revealed');
+      tile.innerHTML = '<span class="memory-side">' + (tile.dataset.side === 'en' ? 'EN' : 'RU') + '</span><span class="memory-face">' + escapeHtml(tile.dataset.face) + '</span>';
+      tile.setAttribute('aria-label', (tile.dataset.side === 'en' ? 'Английское слово: ' : 'Перевод: ') + tile.dataset.face);
+    }
+    function hideMemoryTile(tile) {
+      tile.classList.remove('revealed', 'wrong');
+      tile.innerHTML = '<span class="memory-back" aria-hidden="true">?</span>';
+      tile.setAttribute('aria-label', 'Закрытая карточка');
+    }
+    function selectMemoryTile(tile) {
+      if (memoryBusy || tile.classList.contains('matched') || tile.classList.contains('revealed')) return;
+      revealMemoryTile(tile);
+      memoryFlipped.push(tile);
+      if (memoryFlipped.length < 2) return;
+      memoryMoves++;
+      $('#memory-moves').textContent = memoryMoves;
+      const first = memoryFlipped[0], second = memoryFlipped[1];
+      const isPair = first.dataset.cardId === second.dataset.cardId && first.dataset.side !== second.dataset.side;
+      const round = memoryRound;
+      memoryBusy = true;
+      if (isPair) {
+        setTimeout(() => {
+          if (round !== memoryRound || !$('#memory-board')) return;
+          memoryBusy = false;
+          first.classList.add('matched');
+          second.classList.add('matched');
+          first.disabled = true;
+          second.disabled = true;
+          first.setAttribute('aria-label', 'Пара найдена: ' + first.dataset.face);
+          second.setAttribute('aria-label', 'Пара найдена: ' + second.dataset.face);
+          const card = cards.find(item => item.id === first.dataset.cardId);
+          if (card) knownIds.add(card.id);
+          todayCount = Math.min(10, todayCount + 1);
+          persist();
+          updateStats();
+          memoryFound++;
+          $('#memory-pairs').textContent = memoryFound + ' из ' + memoryItems.length;
+          $('#game-progress').textContent = memoryFound + ' / ' + memoryItems.length;
+          memoryFlipped = [];
+          if (memoryFound === memoryItems.length) {
+            setTimeout(() => { if (round === memoryRound && $('#memory-board')) finishMiniGame('Все пары найдены!', '🧠', 'Вы собрали ' + memoryFound + ' пар за ' + memoryMoves + ' ходов.', startMemoryGame); }, 300);
+          }
+        }, 250);
+      } else {
+        first.classList.add('wrong');
+        second.classList.add('wrong');
+        setTimeout(() => {
+          if (round !== memoryRound || !$('#memory-board')) return;
+          memoryBusy = false;
+          hideMemoryTile(first);
+          hideMemoryTile(second);
+          memoryFlipped = [];
+        }, 800);
+      }
+    }
+    function renderSprintHeader() {
+      return '<div class="view-title"><div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px"><div><h1>Спринт перевода</h1><p>Введи перевод своих слов, пока не закончились 45 секунд.</p></div><button class="text-btn" id="back-games">← Все игры</button></div></div>' +
+        '<div class="sprint-clock-row"><div class="study-type">БЫСТРЫЙ РАУНД</div><strong class="sprint-clock" id="sprint-clock">' + sprintTimeLeft + ' сек</strong></div><div class="study-progress sprint-progress"><div id="sprint-progress" class="' + (sprintTimeLeft <= 10 ? 'urgent' : '') + '" style="width:' + (sprintTimeLeft / 45 * 100) + '%"></div></div>';
+    }
+    function startSprintGame() {
+      if (!cards.length) { renderGameHub(); return; }
+      if (sprintTimer) { clearInterval(sprintTimer); sprintTimer = null; }
+      sprintDeck = shuffle(cards.map((_, index) => index));
+      sprintIndex = 0;
+      sprintScore = 0;
+      sprintErrors = 0;
+      sprintTimeLeft = 45;
+      sprintLocked = false;
+      renderSprintQuestion();
+      sprintTimer = setInterval(() => {
+        sprintTimeLeft = Math.max(0, sprintTimeLeft - 1);
+        const clock = $('#sprint-clock'), progress = $('#sprint-progress');
+        if (clock) clock.textContent = sprintTimeLeft + ' сек';
+        if (progress) {
+          progress.style.width = (sprintTimeLeft / 45 * 100) + '%';
+          progress.classList.toggle('urgent', sprintTimeLeft <= 10);
+        }
+        if (sprintTimeLeft <= 0) {
+          clearInterval(sprintTimer);
+          sprintTimer = null;
+          finishMiniGame('Время вышло!', '⏱️', 'Верных переводов: ' + sprintScore + '. Ошибок: ' + sprintErrors + '.', startSprintGame);
+        }
+      }, 1000);
+    }
+    function renderSprintQuestion() {
+      if (sprintIndex >= sprintDeck.length) {
+        const previous = sprintDeck[sprintDeck.length - 1];
+        sprintDeck = shuffle(cards.map((_, index) => index));
+        if (sprintDeck.length > 1 && sprintDeck[0] === previous) [sprintDeck[0], sprintDeck[1]] = [sprintDeck[1], sprintDeck[0]];
+        sprintIndex = 0;
+      }
+      const card = cards[sprintDeck[sprintIndex]];
+      sprintLocked = false;
+      $('#view-match').innerHTML = renderSprintHeader() +
+        '<div class="sprint-shell"><div class="sprint-scoreline">Верно: <strong id="sprint-score">' + sprintScore + '</strong><span>·</span>Ошибки: <strong id="sprint-errors">' + sprintErrors + '</strong></div><section class="sprint-card"><div class="quiz-question-label">КАК ПЕРЕВОДИТСЯ</div><div class="sprint-word">' + escapeHtml(card.en) + '</div><form id="sprint-form"><label for="sprint-answer">Твой перевод</label><div class="sprint-entry"><input id="sprint-answer" autocomplete="off" autocapitalize="off" placeholder="Введи перевод" required><button class="small-primary" id="sprint-check" type="submit">Проверить</button><button class="small-primary hidden" id="sprint-next" type="button">Дальше →</button></div></form><div class="mini-feedback" id="sprint-feedback" role="status" aria-live="polite"></div></section></div>';
+      $('#back-games').onclick = renderGameHub;
+      $('#sprint-form').onsubmit = event => {
+        event.preventDefault();
+        if (sprintLocked) return;
+        const answer = $('#sprint-answer').value;
+        if (!answer.trim()) return;
+        sprintLocked = true;
+        const correct = normalize(answer) === normalize(card.ru);
+        if (correct) {
+          sprintScore++;
+          knownIds.add(card.id);
+          todayCount = Math.min(10, todayCount + 1);
+          persist();
+          updateStats();
+          $('#sprint-feedback').textContent = 'Точно! Отличный темп.';
+          $('#sprint-feedback').style.color = '#286340';
+        } else {
+          sprintErrors++;
+          $('#sprint-feedback').textContent = 'Правильный перевод: ' + card.ru;
+          $('#sprint-feedback').style.color = '#a34f43';
+        }
+        $('#sprint-score').textContent = sprintScore;
+        $('#sprint-errors').textContent = sprintErrors;
+        $('#sprint-answer').disabled = true;
+        $('#sprint-check').classList.add('hidden');
+        $('#sprint-next').classList.remove('hidden');
+        $('#sprint-next').focus();
+      };
+      $('#sprint-next').onclick = () => { sprintIndex++; renderSprintQuestion(); $('#sprint-answer').focus(); };
+      $('#sprint-answer').focus();
     }    $$('.nav-btn').forEach(button => button.addEventListener('click', () => setView(button.dataset.view)));
     document.addEventListener('click', event => {
       const button = event.target.closest('[data-go]');
