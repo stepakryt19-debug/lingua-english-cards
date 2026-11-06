@@ -1,8 +1,11 @@
-const CACHE_NAME = 'lingua-static-v4';
-const APP_FILES = ['./', './index.html', './manifest.webmanifest', './icon.svg'];
+const CACHE_NAME = 'lingua-static-v5';
+const APP_FILES = ['./', './index.html', './app.js', './manifest.webmanifest', './icon.svg'];
+const APP_URLS = APP_FILES.map(file => new URL(file, self.registration.scope).href);
+const APP_PATHS = new Set(APP_URLS.map(url => new URL(url).pathname));
+const INDEX_URL = new URL('./index.html', self.registration.scope).href;
 
 self.addEventListener('install', event => {
-  event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(APP_FILES)));
+  event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(APP_URLS)));
   self.skipWaiting();
 });
 
@@ -16,20 +19,35 @@ self.addEventListener('activate', event => {
 });
 
 self.addEventListener('fetch', event => {
-  if (event.request.method !== 'GET') return;
-  const requestUrl = new URL(event.request.url);
-  if (requestUrl.origin !== self.location.origin) return;
+  const request = event.request;
+  if (request.method !== 'GET') return;
 
-  event.respondWith(
-    caches.match(event.request).then(cached => {
-      if (cached) return cached;
-      return fetch(event.request).then(response => {
+  const requestUrl = new URL(request.url);
+  if (requestUrl.origin !== self.location.origin || !APP_PATHS.has(requestUrl.pathname)) return;
+
+  const cacheKey = new URL(requestUrl.pathname, self.registration.scope).href;
+
+  if (request.mode === 'navigate') {
+    event.respondWith(
+      fetch(request).then(response => {
         if (response.ok) {
-          const copy = response.clone();
-          caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy));
+          caches.open(CACHE_NAME).then(cache => cache.put(cacheKey, response.clone())).catch(() => {});
         }
         return response;
-      }).catch(() => caches.match('./index.html'));
+      }).catch(() => caches.match(INDEX_URL))
+    );
+    return;
+  }
+
+  event.respondWith(
+    caches.match(cacheKey).then(cached => {
+      if (cached) return cached;
+      return fetch(request).then(response => {
+        if (response.ok) {
+          caches.open(CACHE_NAME).then(cache => cache.put(cacheKey, response.clone())).catch(() => {});
+        }
+        return response;
+      });
     })
   );
 });
