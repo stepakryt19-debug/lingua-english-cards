@@ -929,6 +929,72 @@
       event.preventDefault();
       window.open('https://leximo-stats.goatcounter.com/', '_blank', 'noopener,noreferrer');
     });
+    const heroPhrases = [
+      {en:"One word at a time",ru:"По одному слову за раз"},
+      {en:"Small steps, big progress",ru:"Маленькие шаги — большой прогресс"},
+      {en:"Make English yours",ru:"Сделай английский своим"},
+      {en:"Learn a little every day",ru:"Учись понемногу каждый день"},
+      {en:"Keep going, you’re growing",ru:"Продолжай — ты растёшь"}
+    ];
+    const heroTypingText = $('#hero-typing-text');
+    const heroTypingTranslation = $('#hero-typing-translation');
+    const heroTypingCaret = $('#hero-typing-caret');
+    if (heroTypingText && heroTypingTranslation && heroTypingCaret) {
+      let phraseIndex = 0;
+      let charIndex = 0;
+      let deletingPhrase = false;
+      let typingTimer = null;
+      const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (reducedMotion) {
+        heroTypingText.textContent = heroPhrases[0].en;
+        heroTypingTranslation.textContent = heroPhrases[0].ru;
+        heroTypingTranslation.classList.add('is-visible');
+      } else {
+        const tickPhrase = () => {
+          const phrase = heroPhrases[phraseIndex];
+          if (!deletingPhrase) {
+            charIndex = Math.min(charIndex + 1, phrase.en.length);
+            heroTypingText.textContent = phrase.en.slice(0, charIndex);
+            if (charIndex === phrase.en.length) {
+              heroTypingTranslation.textContent = phrase.ru;
+              heroTypingTranslation.classList.add('is-visible');
+              heroTypingCaret.classList.add('is-idle');
+              deletingPhrase = true;
+              typingTimer = setTimeout(tickPhrase, 1700);
+              return;
+            }
+            typingTimer = setTimeout(tickPhrase, 58);
+            return;
+          }
+          if (charIndex > 0) {
+            if (charIndex === phrase.en.length) {
+              heroTypingTranslation.classList.remove('is-visible');
+              heroTypingCaret.classList.remove('is-idle');
+            }
+            charIndex--;
+            heroTypingText.textContent = phrase.en.slice(0, charIndex);
+            typingTimer = setTimeout(tickPhrase, 24);
+            return;
+          }
+          deletingPhrase = false;
+          phraseIndex = (phraseIndex + 1) % heroPhrases.length;
+          typingTimer = setTimeout(tickPhrase, 250);
+        };
+        heroTypingText.textContent = '';
+        heroTypingTranslation.textContent = '';
+        heroTypingTranslation.classList.remove('is-visible');
+        tickPhrase();
+        document.addEventListener('visibilitychange', () => {
+          if (document.hidden) {
+            clearTimeout(typingTimer);
+            typingTimer = null;
+          } else if (typingTimer === null) {
+            typingTimer = setTimeout(tickPhrase, 180);
+          }
+        });
+      }
+    }
+
     $('#today-date').textContent = now.toLocaleDateString('ru-RU', {weekday:'long', day:'numeric', month:'long'}).toLocaleUpperCase('ru-RU');
     updateStats();
     if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
