@@ -34,7 +34,7 @@
       : 0;
     let streakDays = Number.isFinite(saved.streakDays) ? Math.max(0, Math.min(10000, Math.trunc(saved.streakDays))) : 0;
     let lastStudyDate = typeof saved.lastStudyDate === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(saved.lastStudyDate) ? saved.lastStudyDate : '';
-    let cardIndex = 0, quizIndex = 0, quizScore = 0, quizLocked = false;
+    let cardIndex = 0, quizIndex = 0, quizScore = 0, quizLocked = false, quizDirection = 'en-ru';
     let quizOrder = [], matchItems = [], matchSelected = [], matchFound = 0, audioOn = true, toastTimer, quizAdvanceTimer = null;
     let miniOrder = [], miniIndex = 0, miniScore = 0, miniLocked = false, miniMode = '', letterBank = [], selectedLetters = [], truthExpected = false;
     let memoryItems = [], memoryDeck = [], memoryFlipped = [], memoryFound = 0, memoryMoves = 0, memoryBusy = false, memoryRound = 0;
@@ -331,10 +331,36 @@
         renderStudy();
       };
     }
-    function startQuiz() {
+    function quizDirectionLabel() {
+      return quizDirection === 'ru-en' ? 'Русский -> английский' : 'Английский -> русский';
+    }
+    function quizPrompt(card) {
+      return quizDirection === 'ru-en' ? card.ru : card.en;
+    }
+    function quizTarget(card) {
+      return quizDirection === 'ru-en' ? card.en : card.ru;
+    }
+    function normalizeQuizAnswer(value) {
+      return quizDirection === 'ru-en' ? normalizeEnglish(value) : normalize(value);
+    }
+    function renderQuizModePicker() {
+      if (quizAdvanceTimer) { clearTimeout(quizAdvanceTimer); quizAdvanceTimer = null; }
+      quizLocked = false;
+      $('#view-test').innerHTML = '<div class="view-title"><h1>Тест по ' + escapeHtml(studySetTitle()) + '</h1><p>Выберите направление перевода для тренировки.</p></div>' +
+        '<div class="quiz-mode-grid">' +
+          '<button class="quiz-mode-card" id="quiz-mode-en-ru" type="button"><span class="quiz-mode-code">EN &rarr; RU</span><span class="quiz-mode-copy"><strong>С английского на русский</strong><small>Выберите русский перевод английского слова</small></span><span class="quiz-mode-arrow" aria-hidden="true">&rarr;</span></button>' +
+          '<button class="quiz-mode-card" id="quiz-mode-ru-en" type="button"><span class="quiz-mode-code">RU &rarr; EN</span><span class="quiz-mode-copy"><strong>С русского на английский</strong><small>Выберите английский перевод русского слова</small></span><span class="quiz-mode-arrow" aria-hidden="true">&rarr;</span></button>' +
+        '</div><div class="text-center"><button class="small-secondary" id="quiz-mode-cards" type="button">Мои карточки</button></div>';
+      $('#quiz-mode-en-ru').onclick = () => startQuiz('en-ru');
+      $('#quiz-mode-ru-en').onclick = () => startQuiz('ru-en');
+      $('#quiz-mode-cards').onclick = () => setView('cards');
+    }
+    function startQuiz(direction) {
       if (quizAdvanceTimer) { clearTimeout(quizAdvanceTimer); quizAdvanceTimer = null; }
       const learningDeck = studyCards();
       if (!learningDeck.length) { renderQuizEmpty(); return; }
+      if (direction !== 'en-ru' && direction !== 'ru-en') { renderQuizModePicker(); return; }
+      quizDirection = direction;
       const nextOrder = shuffle(learningDeck.map((_, i) => i)).slice(0, Math.min(learningDeck.length, 10));
       if (nextOrder.length > 1 && nextOrder.join(',') === quizOrder.join(',')) nextOrder.push(nextOrder.shift());
       quizOrder = nextOrder;
