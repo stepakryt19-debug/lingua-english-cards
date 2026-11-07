@@ -1,7 +1,8 @@
 
     const storageKey = 'lingua-custom-cards-v2';
     const now = new Date();
-    const dayKey = [now.getFullYear(), String(now.getMonth() + 1).padStart(2, '0'), String(now.getDate()).padStart(2, '0')].join('-');
+    const dateKey = date => [date.getFullYear(), String(date.getMonth() + 1).padStart(2, '0'), String(date.getDate()).padStart(2, '0')].join('-');
+    let dayKey = dateKey(now);
     let saved = {};
     try {
       const parsed = JSON.parse(localStorage.getItem(storageKey) || '{}');
@@ -31,12 +32,16 @@
     let todayCount = saved.dayKey === dayKey
       ? Math.max(0, Math.min(10, storedTodayCount))
       : 0;
+    let streakDays = Number.isFinite(saved.streakDays) ? Math.max(0, Math.min(10000, Math.trunc(saved.streakDays))) : 0;
+    let lastStudyDate = typeof saved.lastStudyDate === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(saved.lastStudyDate) ? saved.lastStudyDate : '';
     let cardIndex = 0, quizIndex = 0, quizScore = 0, quizLocked = false;
     let quizOrder = [], matchItems = [], matchSelected = [], matchFound = 0, audioOn = true, toastTimer;
     let miniOrder = [], miniIndex = 0, miniScore = 0, miniLocked = false, miniMode = '', letterBank = [], selectedLetters = [], truthExpected = false;
     let memoryItems = [], memoryDeck = [], memoryFlipped = [], memoryFound = 0, memoryMoves = 0, memoryBusy = false, memoryRound = 0;
     let sprintDeck = [], sprintIndex = 0, sprintScore = 0, sprintErrors = 0, sprintTimeLeft = 45, sprintTimer = null, sprintLocked = false;
-    const views = ['home', 'cards', 'test', 'match'];
+    const views = ['home', 'cards', 'test', 'match', 'packs'];
+    let activeView = 'home';
+    let activeStudyPack = null;
     const $ = s => document.querySelector(s);
     const $$ = s => Array.from(document.querySelectorAll(s));
     const escapeHtml = value => String(value == null ? '' : value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -50,10 +55,42 @@
     }
     const normalizeEnglish = value => String(value || '').toLocaleLowerCase('en-US').replace(/[^a-z0-9]/g, '');
     const normalize = value => String(value || '').trim().toLocaleLowerCase('ru-RU').replace(/[.,!?;:]+$/g, '');
+    function studyCards() {
+      return activeStudyPack ? cards.filter(card => card.id.startsWith('pk-' + activeStudyPack + '-')) : cards;
+    }
+    function studySetTitle() {
+      const pack = activeStudyPack && READY_PACKS.find(item => item.id === activeStudyPack);
+      return pack ? pack.title : 'Мои карточки';
+    }
+    function cardCountWord(count) {
+      const lastTwo = count % 100, last = count % 10;
+      if (lastTwo >= 11 && lastTwo <= 14) return 'карточек';
+      return last === 1 ? 'карточка' : last >= 2 && last <= 4 ? 'карточки' : 'карточек';
+    }
+    function visibleStreak() {
+      if (!lastStudyDate) return 0;
+      const yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+      return lastStudyDate === dayKey || lastStudyDate === dateKey(yesterday) ? streakDays : 0;
+    }
+    function recordStudyActivity() {
+      const today = dateKey(new Date());
+      if (dayKey !== today) { dayKey = today; todayCount = 0; }
+      todayCount = Math.min(10, todayCount + 1);
+      if (lastStudyDate !== today) {
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        streakDays = lastStudyDate === dateKey(yesterday) ? streakDays + 1 : 1;
+        lastStudyDate = today;
+      }
+    }
     function persist() {
-      try { localStorage.setItem(storageKey, JSON.stringify({cards:cards, knownIds:Array.from(knownIds), todayCount:todayCount, dayKey:dayKey})); } catch (e) {}
+      try { localStorage.setItem(storageKey, JSON.stringify({cards:cards, knownIds:Array.from(knownIds), todayCount:todayCount, dayKey:dayKey, streakDays:streakDays, lastStudyDate:lastStudyDate})); } catch (e) {}
+      window.dispatchEvent(new Event('leximo:state-changed'));
     }
     function updateStats() {
+      const currentDay = dateKey(new Date());
+      if (dayKey !== currentDay) { dayKey = currentDay; todayCount = 0; persist(); }
       const total = cards.length;
       const knownCount = cards.filter(c => knownIds.has(c.id)).length;
       const goal = Math.min(todayCount, 10);
@@ -66,7 +103,29 @@
       $('#deck-progress-label').textContent = total ? knownCount + ' из ' + total + ' знакомы' : 'Добавьте первую карточку';
       $('#owned-count').textContent = total + (total === 1 ? ' карточка' : total > 1 && total < 5 ? ' карточки' : ' карточек');
       $('#nav-card-count').textContent = total;
+      if ($('#streak-stat')) {
+        const streak = visibleStreak();
+        $('#streak-stat').textContent = streak;
+        $('#streak-unit').textContent = streak % 10 === 1 && streak % 100 !== 11 ? 'день' : streak % 10 >= 2 && streak % 10 <= 4 && (streak % 100 < 12 || streak % 100 > 14) ? 'дня' : 'дней';
+        $('#streak-fire').classList.toggle('streak-active', lastStudyDate === dayKey);
+        $('#streak-label').textContent = lastStudyDate === dayKey ? 'занимаетесь сегодня' : streak ? 'занимайтесь сегодня, чтобы продолжить' : 'начните с одного слова';
+      }
     }
+    window.leximoAccountBridge = {
+      getState: () => ({cards:cards.map(card => ({id:card.id, en:card.en, ru:card.ru, example:card.example || ''})), knownIds:Array.from(knownIds), todayCount:todayCount, dayKey:dayKey, streakDays:streakDays, lastStudyDate:lastStudyDate}),
+      setState: raw => {
+        const nextCards = Array.isArray(raw && raw.cards) ? raw.cards.filter(isSavedCard).map(card => ({id:card.id, en:card.en.trim(), ru:card.ru.trim(), example:typeof card.example === 'string' ? card.example : ''})) : [];
+        const nextIds = new Set(nextCards.map(card => card.id));
+        cards = nextCards;
+        knownIds = new Set(Array.isArray(raw && raw.knownIds) ? raw.knownIds.filter(id => typeof id === 'string' && nextIds.has(id)) : []);
+        todayCount = raw && raw.dayKey === dayKey && Number.isFinite(raw.todayCount) ? Math.max(0, Math.min(10, Math.trunc(raw.todayCount))) : 0;
+        streakDays = Number.isFinite(raw && raw.streakDays) ? Math.max(0, Math.min(10000, Math.trunc(raw.streakDays))) : 0;
+        lastStudyDate = typeof (raw && raw.lastStudyDate) === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(raw.lastStudyDate) ? raw.lastStudyDate : '';
+        try { localStorage.setItem(storageKey, JSON.stringify({cards:cards, knownIds:Array.from(knownIds), todayCount:todayCount, dayKey:dayKey, streakDays:streakDays, lastStudyDate:lastStudyDate})); } catch (e) {}
+        updateStats();
+        if (activeView === 'cards') renderLibrary();
+      }
+    };
     function showToast(message) {
       const el = $('#toast');
       el.textContent = message;
@@ -75,13 +134,15 @@
       toastTimer = setTimeout(() => el.classList.remove('show'), 2100);
     }
     function setView(view) {
+      activeView = view;
       if (view !== 'match') { memoryRound++; memoryBusy = false; if (sprintTimer) { clearInterval(sprintTimer); sprintTimer = null; } }
-      views.forEach(v => $('#view-' + v).classList.toggle('hidden', v !== view));
+      views.forEach(v => { const page = $('#view-' + v); if (page) page.classList.toggle('hidden', v !== view); });
       $$('.nav-btn').forEach(b => b.classList.toggle('active', b.dataset.view === view));
       $('#sidebar').classList.remove('open');
       if (view === 'cards') renderLibrary();
       if (view === 'test') startQuiz();
       if (view === 'match') startMatch();
+      if (view === 'packs') renderPacks();
       window.scrollTo({top:0, behavior:'smooth'});
     }
     function speak(text) {
@@ -95,7 +156,78 @@
     function emptyState(title, message, buttonId, buttonText) {
       return '<div class="empty-state"><div class="empty-emoji">✍️</div><h2>' + escapeHtml(title) + '</h2><p>' + escapeHtml(message) + '</p><button class="small-primary" id="' + buttonId + '">' + escapeHtml(buttonText) + '</button></div>';
     }
+    const READY_PACKS = [
+      {id:'starter', level:'НАЧАЛО · A1', title:'Английский с нуля', description:'Самые нужные слова и фразы для первых разговоров.', topic:'Базовый словарь', cards:[
+        ['hello','привет','Hello, Anna!'],['name','имя','My name is Sam.'],['family','семья','My family is at home.'],['friend','друг','Tom is my friend.'],['home','дом','I am at home.'],['school','школа','The school is near my home.'],['book','книга','This is a good book.'],['water','вода','Can I have some water?'],['food','еда','The food is ready.'],['want','хотеть','I want a cup of tea.'],['need','нуждаться','We need more time.'],['thank you','спасибо','Thank you for your help.'],['please','пожалуйста','One coffee, please.'],['today','сегодня','I am busy today.'],['good','хороший','Have a good day!']
+      ]},
+      {id:'everyday', level:'БАЗОВЫЙ · A2', title:'Каждый день', description:'Распорядок дня, привычки и простые разговоры.', topic:'Повседневная жизнь', cards:[
+        ['wake up','просыпаться','I wake up at seven.'],['breakfast','завтрак','We have breakfast together.'],['usually','обычно','I usually walk to work.'],['sometimes','иногда','Sometimes I read before bed.'],['busy','занятый','I am busy this afternoon.'],['free time','свободное время','What do you do in your free time?'],['weather','погода','The weather is warm today.'],['plan','план','What is your plan for tomorrow?'],['enjoy','нравиться; получать удовольствие','I enjoy learning English.'],['favourite','любимый','Blue is my favourite colour.'],['tired','уставший','She feels tired after work.'],['tomorrow','завтра','See you tomorrow!'],['early','рано','He gets up early.'],['often','часто','We often cook at home.'],['together','вместе','Let’s study together.']
+      ]},
+      {id:'travel', level:'ПУТЕШЕСТВИЯ · A2–B1', title:'В поездке', description:'Аэропорт, отель, дорога и просьба о помощи.', topic:'Путешествия', cards:[
+        ['passport','паспорт','Here is my passport.'],['ticket','билет','I have a ticket to London.'],['platform','платформа','Which platform does the train leave from?'],['luggage','багаж','My luggage is heavy.'],['reservation','бронь; бронирование','I have a reservation for tonight.'],['check in','зарегистрироваться; заселиться','We need to check in at the hotel.'],['boarding pass','посадочный талон','Please show me your boarding pass.'],['delayed','задержанный; задерживается','The flight is delayed by an hour.'],['directions','как пройти; указания','Could you give me directions?'],['turn left','повернуть налево','Turn left at the next street.'],['go straight','идти прямо','Go straight for two blocks.'],['Where is the station?','Где находится вокзал?','Excuse me, where is the station?'],['I need help','Мне нужна помощь','I need help with my suitcase.'],['single room','одноместный номер','I would like a single room.'],['How much is it?','Сколько это стоит?','How much is it to the airport?']
+      ]},
+      {id:'cafe', level:'ПОВСЕДНЕВНЫЙ · A2', title:'Кафе и еда', description:'Заказывайте еду, уточняйте состав и просите счёт.', topic:'Еда и кафе', cards:[
+        ['menu','меню','Could I see the menu, please?'],['order','заказывать; заказ','Are you ready to order?'],['bill','счёт','Could we have the bill, please?'],['table for two','столик на двоих','A table for two, please.'],['still water','вода без газа','Could I have still water?'],['sparkling water','газированная вода','She would like sparkling water.'],['starter','закуска','The soup is a good starter.'],['main course','основное блюдо','The main course comes with rice.'],['dessert','десерт','Would you like some dessert?'],['allergic to','иметь аллергию на','I am allergic to nuts.'],['vegetarian','вегетарианец; вегетарианский','Do you have a vegetarian option?'],['delicious','вкусный','This cake is delicious.'],['take away','с собой','Can I get this to take away?'],['without sugar','без сахара','Tea without sugar, please.'],['tip','чаевые','Is service included, or should I leave a tip?']
+      ]},
+      {id:'work', level:'РАБОТА · B1–B2', title:'Работа и общение', description:'Встречи, задачи, сроки и деловая переписка.', topic:'Профессиональный английский', cards:[
+        ['meeting','встреча; совещание','The meeting starts at ten.'],['deadline','крайний срок','The deadline is next Friday.'],['task','задача','I finished the task this morning.'],['schedule','расписание; планировать','Let’s check the project schedule.'],['update','обновление; сообщить новости','Could you send me an update?'],['colleague','коллега','My colleague will join the call.'],['feedback','обратная связь','Thank you for your feedback.'],['available','свободный; доступный','Are you available this afternoon?'],['discuss','обсуждать','We need to discuss the next steps.'],['solve a problem','решить проблему','The team solved the problem quickly.'],['project','проект','Our project is almost ready.'],['take notes','делать заметки','I will take notes during the meeting.'],['reschedule','перенести на другое время','Can we reschedule our call?'],['responsibility','ответственность; обязанность','This is my responsibility.'],['let me know','дайте мне знать','Let me know if you need help.']
+      ]},
+      {id:'it', level:'IT · B1–C1', title:'IT-специалист', description:'Слова для разработки, командной работы и выпуска продукта.', topic:'Технологии', cards:[
+        ['deployment','развёртывание','The deployment is scheduled for tonight.'],['branch','ветка','Create a new branch for this change.'],['commit','коммит; зафиксировать изменения','I will commit the fix after the review.'],['bug','ошибка; баг','We found a bug in the login flow.'],['issue','проблема; задача','Please create an issue for this bug.'],['feature','функция; возможность','This feature is available to all users.'],['requirement','требование','The requirement is not clear yet.'],['database','база данных','The app stores user data in a database.'],['query','запрос','This query takes too long to run.'],['backup','резервная копия; создавать копию','Make a backup before the update.'],['release','релиз; выпускать','The release includes three fixes.'],['security','безопасность','Security is part of every review.'],['user interface','пользовательский интерфейс','The user interface should work on mobile.'],['performance','производительность','We need to improve page performance.'],['code review','проверка кода','The change is waiting for a code review.']
+      ]}
+    ];
+    function packCardId(pack, index) { return 'pk-' + pack.id + '-' + String(index + 1).padStart(2, '0'); }
+    function renderPacks() {
+      const packRows = READY_PACKS.map(pack => {
+        const addedCount = pack.cards.filter((card, index) => cards.some(savedCard => savedCard.id === packCardId(pack, index))).length;
+        const missingCount = pack.cards.length - addedCount;
+        const addButton = missingCount
+          ? '<button class="small-primary" data-pack-add="' + pack.id + '">Добавить ' + missingCount + ' ' + cardCountWord(missingCount) + '</button>'
+          : '<button class="small-secondary" disabled>Набор уже добавлен</button>';
+        const studyButton = addedCount === pack.cards.length
+          ? '<button class="small-secondary" data-pack-study="' + pack.id + '">Учить набор</button>'
+          : '<button class="small-secondary" disabled>Сначала добавьте набор</button>';
+        return '<article class="ready-pack"><div class="ready-pack-head"><span class="pack-level">' + escapeHtml(pack.level) + '</span><span class="pack-count">' + pack.cards.length + ' ' + cardCountWord(pack.cards.length) + '</span></div><h2>' + escapeHtml(pack.title) + '</h2><p>' + escapeHtml(pack.description) + '</p><div class="pack-topic">' + escapeHtml(pack.topic) + '</div><div class="pack-actions">' + addButton + studyButton + '</div></article>';
+      }).join('');
+      const selectedName = activeStudyPack && READY_PACKS.find(pack => pack.id === activeStudyPack);
+      $('#view-packs').innerHTML = '<div class="view-title"><h1>Готовые наборы</h1><p>Выберите тему и добавьте слова в свой словарь. Каждый набор можно учить отдельно.</p></div>' +
+        (selectedName ? '<div class="pack-current">Сейчас выбран набор «' + escapeHtml(selectedName.title) + '». <button class="text-btn" id="clear-pack-filter">Учить все мои карточки</button></div>' : '') +
+        '<div class="ready-packs-grid">' + packRows + '</div>';
+      $$('[data-pack-add]').forEach(button => button.onclick = () => addReadyPack(button.dataset.packAdd));
+      $$('[data-pack-study]').forEach(button => button.onclick = () => studyReadyPack(button.dataset.packStudy));
+      const clearFilter = $('#clear-pack-filter');
+      if (clearFilter) clearFilter.onclick = () => { activeStudyPack = null; renderPacks(); showToast('Выбраны все ваши карточки'); };
+    }
+    function addReadyPack(packId) {
+      const pack = READY_PACKS.find(item => item.id === packId);
+      if (!pack) return;
+      const existingIds = new Set(cards.map(card => card.id));
+      let added = 0;
+      pack.cards.forEach((entry, index) => {
+        const id = packCardId(pack, index);
+        if (existingIds.has(id)) return;
+        cards.push({id:id, en:entry[0], ru:entry[1], example:entry[2] || ''});
+        existingIds.add(id);
+        added++;
+      });
+      if (added) {
+        persist();
+        updateStats();
+        showToast('Добавлено карточек: ' + added);
+      }
+      renderPacks();
+    }
+    function studyReadyPack(packId) {
+      const pack = READY_PACKS.find(item => item.id === packId);
+      if (!pack || pack.cards.some((_, index) => !cards.some(card => card.id === packCardId(pack, index)))) return;
+      activeStudyPack = pack.id;
+      cardIndex = 0;
+      setView('cards');
+      renderStudy();
+    }
     function renderLibrary() {
+      const learningDeck = studyCards();
+      const selectedPack = activeStudyPack && READY_PACKS.find(pack => pack.id === activeStudyPack);
       const rows = cards.map(card =>
         '<article class="owned-card"><div class="owned-terms"><div class="owned-en">' + escapeHtml(card.en) + '</div><div class="owned-ru">' + escapeHtml(card.ru) + '</div>' +
         (card.example ? '<div class="owned-example">“' + escapeHtml(card.example) + '”</div>' : '') +
@@ -103,15 +235,18 @@
       ).join('');
       const listContent = cards.length ? '<div class="owned-list">' + rows + '</div>' : emptyState('Пока нет карточек', 'Добавьте английское слово или фразу и свой перевод. Затем сможете учить их здесь.', 'empty-add', 'Создать первую карточку');
       $('#view-cards').innerHTML =
-        '<div class="view-title"><h1>Мои карточки</h1><p>Ваш личный набор слов и фраз. Добавляйте, редактируйте и повторяйте его.</p></div>' +
+        '<div class="view-title"><h1>Мои карточки</h1><p>' + (selectedPack ? 'Для занятий выбран набор «' + escapeHtml(selectedPack.title) + '». Остальные карточки остаются в вашем словаре.' : 'Ваш личный набор слов и фраз. Добавляйте, редактируйте и повторяйте его.') + '</p></div>' +
         '<div class="library-toolbar"><div class="library-count">В наборе: <strong>' + cards.length + '</strong></div><div class="library-actions">' +
-        '<button class="small-secondary" id="study-btn"' + (cards.length ? '' : ' disabled') + '>Учить карточки</button>' +
-        '<button class="small-secondary" id="test-btn"' + (cards.length ? '' : ' disabled') + '>Тест</button>' +
-        '<button class="small-secondary" id="match-btn"' + (cards.length < 1 ? ' disabled' : '') + '>Мини-игры</button>' +
+        (selectedPack ? '<button class="small-secondary" id="all-cards-btn">Учить все карточки</button>' : '<button class="small-secondary" id="browse-packs-btn">Готовые наборы</button>') +
+        '<button class="small-secondary" id="study-btn"' + (learningDeck.length ? '' : ' disabled') + '>' + (selectedPack ? 'Учить этот набор' : 'Учить карточки') + '</button>' +
+        '<button class="small-secondary" id="test-btn"' + (learningDeck.length ? '' : ' disabled') + '>Тест</button>' +
+        '<button class="small-secondary" id="match-btn"' + (learningDeck.length < 1 ? ' disabled' : '') + '>Мини-игры</button>' +
         '<button class="small-primary" id="add-card-btn">+ Добавить карточку</button></div></div>' +
         '<div id="owned-list">' + listContent + '</div>' +
-        (cards.length === 1 ? '<p class="disabled-note">Для игр «Подбор пар», «Память» и «Верно или нет» добавьте ещё одну карточку. Остальные режимы уже доступны.</p>' : '');
+        (learningDeck.length === 1 ? '<p class="disabled-note">Для игр «Подбор пар», «Память» и «Верно или нет» в этом наборе нужна ещё одна карточка. Остальные режимы доступны.</p>' : '');
       $('#add-card-btn').onclick = () => showCardForm();
+      if ($('#browse-packs-btn')) $('#browse-packs-btn').onclick = () => setView('packs');
+      if ($('#all-cards-btn')) $('#all-cards-btn').onclick = () => { activeStudyPack = null; renderLibrary(); };
       if ($('#empty-add')) $('#empty-add').onclick = () => showCardForm();
       if ($('#study-btn')) $('#study-btn').onclick = () => { cardIndex = 0; renderStudy(); };
       if ($('#test-btn')) $('#test-btn').onclick = () => setView('test');
@@ -164,12 +299,14 @@
       });
     }
     function renderStudy() {
-      if (!cards.length) { renderLibrary(); return; }
-      const card = cards[cardIndex % cards.length];
+      const learningDeck = studyCards();
+      if (!learningDeck.length) { renderLibrary(); return; }
+      const card = learningDeck[cardIndex % learningDeck.length];
+      const selectedPack = activeStudyPack && READY_PACKS.find(pack => pack.id === activeStudyPack);
       $('#view-cards').innerHTML =
-        '<div class="view-title"><h1>Учить карточки</h1><p>Вспомните перевод, затем откройте ответ.</p></div>' +
-        '<div class="study-shell"><div class="study-topline"><div class="study-type">МОЙ НАБОР</div><div class="counter">' + (cardIndex + 1) + ' / ' + cards.length + '</div></div>' +
-        '<div class="study-progress"><div style="width:' + ((cardIndex + 1) / cards.length * 100) + '%"></div></div>' +
+        '<div class="view-title"><h1>' + (selectedPack ? escapeHtml(selectedPack.title) : 'Учить карточки') + '</h1><p>Вспомните перевод, затем откройте ответ.</p></div>' +
+        '<div class="study-shell"><div class="study-topline"><div class="study-type">' + (selectedPack ? 'ГОТОВЫЙ НАБОР' : 'МОЙ НАБОР') + '</div><div class="counter">' + (cardIndex + 1) + ' / ' + learningDeck.length + '</div></div>' +
+        '<div class="study-progress"><div style="width:' + ((cardIndex + 1) / learningDeck.length * 100) + '%"></div></div>' +
         '<div class="flashcard" id="flashcard" role="button" tabindex="0" aria-label="Нажмите, чтобы открыть перевод"><div class="word-type">МОЯ КАРТОЧКА</div>' +
         '<button class="speaker" id="speak-card" aria-label="Прослушать слово"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4zM15.5 8.5a5 5 0 0 1 0 7"/></svg></button>' +
         '<div class="word">' + escapeHtml(card.en) + '</div><div class="hint">Нажмите, чтобы увидеть перевод</div><div class="answer"><div class="answer-translation">' + escapeHtml(card.ru) + '</div>' +
@@ -181,21 +318,22 @@
       $('#flashcard').addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); flip(); } });
       $('#speak-card').onclick = e => { e.stopPropagation(); speak(card.en); };
       $('#back-library').onclick = renderLibrary;
-      $('#again-card').onclick = () => { cardIndex = (cardIndex + 1) % cards.length; showToast('Вернёмся к этой карточке позже'); renderStudy(); };
-      $('#next-card').onclick = () => { cardIndex = (cardIndex + 1) % cards.length; renderStudy(); };
+      $('#again-card').onclick = () => { cardIndex = (cardIndex + 1) % learningDeck.length; showToast('Вернёмся к этой карточке позже'); renderStudy(); };
+      $('#next-card').onclick = () => { cardIndex = (cardIndex + 1) % learningDeck.length; renderStudy(); };
       $('#known-card').onclick = () => {
         knownIds.add(card.id);
-        todayCount = Math.min(10, todayCount + 1);
+        recordStudyActivity();
         persist();
         updateStats();
         showToast('Отлично! Карточка отмечена как знакомая');
-        cardIndex = (cardIndex + 1) % cards.length;
+        cardIndex = (cardIndex + 1) % learningDeck.length;
         renderStudy();
       };
     }
     function startQuiz() {
-      if (!cards.length) { renderQuizEmpty(); return; }
-      const nextOrder = shuffle(cards.map((_, i) => i)).slice(0, Math.min(cards.length, 10));
+      const learningDeck = studyCards();
+      if (!learningDeck.length) { renderQuizEmpty(); return; }
+      const nextOrder = shuffle(learningDeck.map((_, i) => i)).slice(0, Math.min(learningDeck.length, 10));
       if (nextOrder.length > 1 && nextOrder.join(',') === quizOrder.join(',')) nextOrder.push(nextOrder.shift());
       quizOrder = nextOrder;
       quizIndex = 0;
@@ -209,29 +347,30 @@
       $('#quiz-add-card').onclick = () => { setView('cards'); showCardForm(); };
     }
     function renderQuizQuestion() {
+      const learningDeck = studyCards();
       if (quizIndex >= quizOrder.length) {
-        $('#view-test').innerHTML = '<div class="view-title"><h1>Тест по моим карточкам</h1><p>Ваш результат по личному набору.</p></div><div class="finish-card"><div class="finish-emoji">' + (quizScore === quizOrder.length ? '🎉' : '🌱') + '</div><h2>' + (quizScore === quizOrder.length ? 'Отличная работа!' : 'Хорошая практика!') + '</h2><p>Правильных ответов: <strong>' + quizScore + ' из ' + quizOrder.length + '</strong>.</p><button class="small-primary" id="restart-quiz">Пройти ещё раз</button> <button class="small-secondary" id="quiz-to-cards">Мои карточки</button></div>';
+        $('#view-test').innerHTML = '<div class="view-title"><h1>Тест: ' + escapeHtml(studySetTitle()) + '</h1><p>Ваш результат.</p></div><div class="finish-card"><div class="finish-emoji">' + (quizScore === quizOrder.length ? '🎉' : '🌱') + '</div><h2>' + (quizScore === quizOrder.length ? 'Отличная работа!' : 'Хорошая практика!') + '</h2><p>Правильных ответов: <strong>' + quizScore + ' из ' + quizOrder.length + '</strong>.</p><button class="small-primary" id="restart-quiz">Пройти ещё раз</button> <button class="small-secondary" id="quiz-to-cards">Мои карточки</button></div>';
         $('#restart-quiz').onclick = startQuiz;
         $('#quiz-to-cards').onclick = () => setView('cards');
         return;
       }
       const index = quizOrder[quizIndex];
-      const card = cards[index];
-      const candidateIndexes = shuffle(cards.map((_, i) => i).filter(i => i !== index && normalize(cards[i].ru) !== normalize(card.ru)));
+      const card = learningDeck[index];
+      const candidateIndexes = shuffle(learningDeck.map((_, i) => i).filter(i => i !== index && normalize(learningDeck[i].ru) !== normalize(card.ru)));
       const options = shuffle([index].concat(candidateIndexes.slice(0, 3)));
       const useChoices = options.length > 1;
       quizLocked = false;
       const questionBody = useChoices
-        ? '<div class="quiz-choices">' + options.map((i, n) => '<button class="choice" data-answer="' + i + '"><span class="choice-letter">' + String.fromCharCode(65 + n) + '</span>' + escapeHtml(cards[i].ru) + '</button>').join('') + '</div>'
+        ? '<div class="quiz-choices">' + options.map((i, n) => '<button class="choice" data-answer="' + i + '"><span class="choice-letter">' + String.fromCharCode(65 + n) + '</span>' + escapeHtml(learningDeck[i].ru) + '</button>').join('') + '</div>'
         : '<form class="quiz-input" id="typed-answer"><input id="answer-input" autocomplete="off" required placeholder="Введите перевод"><button class="small-primary" type="submit">Проверить</button></form>';
-      $('#view-test').innerHTML = '<div class="view-title"><h1>Тест по моим карточкам</h1><p>Выберите или введите перевод своей карточки.</p></div><div class="quiz-shell"><div class="study-topline"><div class="study-type">ВОПРОС ' + (quizIndex + 1) + '</div><div class="counter">' + (quizIndex + 1) + ' / ' + quizOrder.length + '</div></div><div class="study-progress"><div style="width:' + ((quizIndex + 1) / quizOrder.length * 100) + '%"></div></div><div class="quiz-card"><div class="quiz-question-label">КАК ПЕРЕВОДИТСЯ</div><div class="quiz-question">' + escapeHtml(card.en) + '</div>' + questionBody + '<div class="quiz-feedback" id="quiz-feedback"></div><div class="quiz-bottom"><button class="small-secondary" id="quit-quiz">Мои карточки</button><button class="small-primary hidden" id="next-question">Дальше →</button></div></div></div>';
+      $('#view-test').innerHTML = '<div class="view-title"><h1>Тест: ' + escapeHtml(studySetTitle()) + '</h1><p>Выберите или введите перевод карточки.</p></div><div class="quiz-shell"><div class="study-topline"><div class="study-type">ВОПРОС ' + (quizIndex + 1) + '</div><div class="counter">' + (quizIndex + 1) + ' / ' + quizOrder.length + '</div></div><div class="study-progress"><div style="width:' + ((quizIndex + 1) / quizOrder.length * 100) + '%"></div></div><div class="quiz-card"><div class="quiz-question-label">КАК ПЕРЕВОДИТСЯ</div><div class="quiz-question">' + escapeHtml(card.en) + '</div>' + questionBody + '<div class="quiz-feedback" id="quiz-feedback"></div><div class="quiz-bottom"><button class="small-secondary" id="quit-quiz">Мои карточки</button><button class="small-primary hidden" id="next-question">Дальше →</button></div></div></div>';
       function answerQuestion(correct, selectedButton) {
         if (quizLocked) return;
         quizLocked = true;
         if (correct) {
           quizScore++;
           knownIds.add(card.id);
-          todayCount = Math.min(10, todayCount + 1);
+          recordStudyActivity();
           persist();
           updateStats();
         }
@@ -256,18 +395,19 @@
     }
     function startMatch() { renderGameHub(); }
     function renderGameHub() {
+      const learningDeck = studyCards();
       if (sprintTimer) { clearInterval(sprintTimer); sprintTimer = null; }
       memoryRound++;
       memoryBusy = false;
-      if (!cards.length) {
+      if (!learningDeck.length) {
         $('#view-match').innerHTML = '<div class="view-title"><h1>Мини-игры</h1><p>Игры будут собраны из ваших карточек.</p></div><div class="finish-card">' + emptyState('Пока нечего повторять', 'Добавьте свои слова и переводы — и они появятся во всех игровых режимах.', 'game-add-card', 'Создать карточку') + '</div>';
         $('#game-add-card').onclick = () => { setView('cards'); showCardForm(); };
         return;
       }
-      const pairDisabled = cards.length < 2 ? ' disabled' : '';
-      const pairNote = cards.length < 2 ? '<div class="disabled-note">Добавьте вторую карточку, чтобы играть.</div>' : '';
+      const pairDisabled = learningDeck.length < 2 ? ' disabled' : '';
+      const pairNote = learningDeck.length < 2 ? '<div class="disabled-note">Добавьте вторую карточку, чтобы играть.</div>' : '';
       $('#view-match').innerHTML =
-        '<div class="view-title"><h1>Мини-игры</h1><p>Выберите режим. Все задания используют только карточки из вашего набора (' + cards.length + ').</p></div>' +
+        '<div class="view-title"><h1>Мини-игры</h1><p>Выберите режим. Все задания используют только карточки из вашего набора (' + learningDeck.length + ').</p></div>' +
         '<div class="game-options">' +
         '<section class="game-option"><div class="game-emoji">🧩</div><h3>Подбор пар</h3><p>Соедините каждое английское слово с вашим переводом.</p><button class="small-primary" id="play-pairs"' + pairDisabled + '>Играть</button>' + pairNote + '</section>' +
         '<section class="game-option"><div class="game-emoji">🔤</div><h3>Собери слово</h3><p>По переводу соберите английское слово из перемешанных букв.</p><button class="small-primary" id="play-build">Играть</button></section>' +
@@ -284,7 +424,7 @@
     }
     function renderGameHeader(title, description, count, total) {
       return '<div class="view-title"><div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px"><div><h1>' + escapeHtml(title) + '</h1><p>' + escapeHtml(description) + '</p></div><button class="text-btn" id="back-games">← Все игры</button></div></div>' +
-        '<div class="study-topline"><div class="study-type">МОЙ НАБОР</div><div class="counter" id="game-progress">' + count + ' / ' + total + '</div></div>' +
+        '<div class="study-topline"><div class="study-type">' + (activeStudyPack ? 'ГОТОВЫЙ НАБОР' : 'МОЙ НАБОР') + '</div><div class="counter" id="game-progress">' + count + ' / ' + total + '</div></div>' +
         '<div class="study-progress"><div style="width:' + (count / total * 100) + '%"></div></div>';
     }
     function finishMiniGame(title, emoji, description, replay) {
@@ -293,8 +433,9 @@
       $('#finish-all-games').onclick = renderGameHub;
     }
     function startPairGame() {
-      if (cards.length < 2) { renderGameHub(); return; }
-      matchItems = shuffle(cards.map((card, index) => ({card:card, index:index}))).slice(0, 6);
+      const learningDeck = studyCards();
+      if (learningDeck.length < 2) { renderGameHub(); return; }
+      matchItems = shuffle(learningDeck.map((card, index) => ({card:card, index:index}))).slice(0, 6);
       matchSelected = [];
       matchFound = 0;
       const tiles = [];
@@ -325,9 +466,9 @@
           first.classList.add('matched');
           second.classList.add('matched');
           matchFound++;
-          const card = cards.find(c => c.id === first.dataset.cardId);
+          const card = studyCards().find(c => c.id === first.dataset.cardId);
           if (card) knownIds.add(card.id);
-          todayCount = Math.min(10, todayCount + 1);
+          recordStudyActivity();
           persist();
           updateStats();
           $('#game-progress').textContent = matchFound + ' / ' + matchItems.length;
@@ -349,18 +490,20 @@
     }
     function startBuildGame() {
       miniMode = 'build';
-      miniOrder = shuffle(cards.map((card, index) => index).filter(index => normalizeEnglish(cards[index].en).length > 0)).slice(0, 10);
+      const learningDeck = studyCards();
+      miniOrder = shuffle(learningDeck.map((card, index) => index).filter(index => normalizeEnglish(learningDeck[index].en).length > 0)).slice(0, 10);
       if (!miniOrder.length) { renderGameHub(); showToast('В карточках нет английских букв для этой игры'); return; }
       miniIndex = 0;
       miniScore = 0;
       renderBuildQuestion();
     }
     function renderBuildQuestion() {
+      const learningDeck = studyCards();
       if (miniIndex >= miniOrder.length) {
         finishMiniGame('Раунд завершён', '🔤', 'Вы собрали ' + miniScore + ' из ' + miniOrder.length + ' слов.', startBuildGame);
         return;
       }
-      const card = cards[miniOrder[miniIndex]];
+      const card = learningDeck[miniOrder[miniIndex]];
       letterBank = shuffle(Array.from(normalizeEnglish(card.en))).map((letter, index) => ({id:index, letter:letter}));
       selectedLetters = [];
       miniLocked = false;
@@ -387,13 +530,13 @@
     function checkBuiltWord() {
       if (miniLocked || !selectedLetters.length) return;
       const answer = selectedLetters.map(id => letterBank.find(item => item.id === id).letter).join('');
-      const card = cards[miniOrder[miniIndex]];
+      const card = studyCards()[miniOrder[miniIndex]];
       const correct = answer === normalizeEnglish(card.en);
       miniLocked = true;
       if (correct) {
         miniScore++;
         knownIds.add(card.id);
-        todayCount = Math.min(10, todayCount + 1);
+        recordStudyActivity();
         persist();
         updateStats();
       }
@@ -405,20 +548,22 @@
       renderLetterBoard();
     }
     function startTruthGame() {
-      if (cards.length < 2) { renderGameHub(); return; }
+      const learningDeck = studyCards();
+      if (learningDeck.length < 2) { renderGameHub(); return; }
       miniMode = 'truth';
-      miniOrder = shuffle(cards.map((_, index) => index)).slice(0, Math.min(cards.length, 10));
+      miniOrder = shuffle(learningDeck.map((_, index) => index)).slice(0, Math.min(learningDeck.length, 10));
       miniIndex = 0;
       miniScore = 0;
       renderTruthQuestion();
     }
     function renderTruthQuestion() {
+      const learningDeck = studyCards();
       if (miniIndex >= miniOrder.length) {
         finishMiniGame('Раунд завершён', '✅', 'Вы правильно определили ' + miniScore + ' из ' + miniOrder.length + ' ответов.', startTruthGame);
         return;
       }
-      const card = cards[miniOrder[miniIndex]];
-      const otherTranslations = cards.map((item, index) => ({item:item, index:index})).filter(row => row.index !== miniOrder[miniIndex] && normalize(row.item.ru) !== normalize(card.ru));
+      const card = learningDeck[miniOrder[miniIndex]];
+      const otherTranslations = learningDeck.map((item, index) => ({item:item, index:index})).filter(row => row.index !== miniOrder[miniIndex] && normalize(row.item.ru) !== normalize(card.ru));
       truthExpected = Math.random() < .5 || !otherTranslations.length;
       const shownTranslation = truthExpected ? card.ru : otherTranslations[Math.floor(Math.random() * otherTranslations.length)].item.ru;
       miniLocked = false;
@@ -436,7 +581,7 @@
       if (correct) {
         miniScore++;
         knownIds.add(card.id);
-        todayCount = Math.min(10, todayCount + 1);
+        recordStudyActivity();
         persist();
         updateStats();
       }
@@ -445,10 +590,12 @@
       $('#truth-feedback').textContent = (correct ? 'Верно! ' : 'Не совсем. ') + 'Перевод карточки: ' + card.ru;
       $('#truth-feedback').style.color = correct ? '#286340' : '#a34f43';
       $('#next-truth').classList.remove('hidden');
-    }    function startMemoryGame() {
-      if (cards.length < 2) { renderGameHub(); return; }
+    }
+    function startMemoryGame() {
+      const learningDeck = studyCards();
+      if (learningDeck.length < 2) { renderGameHub(); return; }
       memoryRound++;
-      memoryItems = shuffle(cards).slice(0, Math.min(cards.length, 6));
+      memoryItems = shuffle(learningDeck).slice(0, Math.min(learningDeck.length, 6));
       memoryDeck = shuffle(memoryItems.flatMap(card => [
         {cardId:card.id, side:'en', text:card.en},
         {cardId:card.id, side:'ru', text:card.ru}
@@ -497,9 +644,9 @@
           second.disabled = true;
           first.setAttribute('aria-label', 'Пара найдена: ' + first.dataset.face);
           second.setAttribute('aria-label', 'Пара найдена: ' + second.dataset.face);
-          const card = cards.find(item => item.id === first.dataset.cardId);
+          const card = studyCards().find(item => item.id === first.dataset.cardId);
           if (card) knownIds.add(card.id);
-          todayCount = Math.min(10, todayCount + 1);
+          recordStudyActivity();
           persist();
           updateStats();
           memoryFound++;
@@ -527,9 +674,10 @@
         '<div class="sprint-clock-row"><div class="study-type">БЫСТРЫЙ РАУНД</div><strong class="sprint-clock" id="sprint-clock">' + sprintTimeLeft + ' сек</strong></div><div class="study-progress sprint-progress"><div id="sprint-progress" class="' + (sprintTimeLeft <= 10 ? 'urgent' : '') + '" style="width:' + (sprintTimeLeft / 45 * 100) + '%"></div></div>';
     }
     function startSprintGame() {
-      if (!cards.length) { renderGameHub(); return; }
+      const learningDeck = studyCards();
+      if (!learningDeck.length) { renderGameHub(); return; }
       if (sprintTimer) { clearInterval(sprintTimer); sprintTimer = null; }
-      sprintDeck = shuffle(cards.map((_, index) => index));
+      sprintDeck = shuffle(learningDeck.map((_, index) => index));
       sprintIndex = 0;
       sprintScore = 0;
       sprintErrors = 0;
@@ -552,13 +700,14 @@
       }, 1000);
     }
     function renderSprintQuestion() {
+      const learningDeck = studyCards();
       if (sprintIndex >= sprintDeck.length) {
         const previous = sprintDeck[sprintDeck.length - 1];
-        sprintDeck = shuffle(cards.map((_, index) => index));
+        sprintDeck = shuffle(learningDeck.map((_, index) => index));
         if (sprintDeck.length > 1 && sprintDeck[0] === previous) [sprintDeck[0], sprintDeck[1]] = [sprintDeck[1], sprintDeck[0]];
         sprintIndex = 0;
       }
-      const card = cards[sprintDeck[sprintIndex]];
+      const card = learningDeck[sprintDeck[sprintIndex]];
       sprintLocked = false;
       $('#view-match').innerHTML = renderSprintHeader() +
         '<div class="sprint-shell"><div class="sprint-scoreline">Верно: <strong id="sprint-score">' + sprintScore + '</strong><span>·</span>Ошибки: <strong id="sprint-errors">' + sprintErrors + '</strong></div><section class="sprint-card"><div class="quiz-question-label">КАК ПЕРЕВОДИТСЯ</div><div class="sprint-word">' + escapeHtml(card.en) + '</div><form id="sprint-form"><label for="sprint-answer">Твой перевод</label><div class="sprint-entry"><input id="sprint-answer" autocomplete="off" autocapitalize="off" placeholder="Введи перевод" required><button class="small-primary" id="sprint-check" type="submit">Проверить</button><button class="small-primary hidden" id="sprint-next" type="button">Дальше →</button></div></form><div class="mini-feedback" id="sprint-feedback" role="status" aria-live="polite"></div></section></div>';
@@ -573,7 +722,7 @@
         if (correct) {
           sprintScore++;
           knownIds.add(card.id);
-          todayCount = Math.min(10, todayCount + 1);
+          recordStudyActivity();
           persist();
           updateStats();
           $('#sprint-feedback').textContent = 'Точно! Отличный темп.';
