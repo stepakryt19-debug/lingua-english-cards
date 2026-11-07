@@ -253,13 +253,17 @@
   body.theme-studio .install-guide section{background:#0c2029;border-color:#2c4a54}
 
   .hero-typing{margin:3px 0 12px;min-height:58px}
-  .hero-typing-caption{display:block;color:#9ed8c7;font-size:9px;line-height:1.2;font-weight:800;letter-spacing:1px}
-  .hero-typing-line{display:flex;align-items:center;min-height:25px;margin-top:2px;color:#c1f1e4;font-size:18px;line-height:1.25;font-weight:800;letter-spacing:-.35px}
+  .hero-typing-caption{display:block;color:#246c68;font-size:9px;line-height:1.2;font-weight:800;letter-spacing:1px}
+  .hero-typing-line{display:flex;align-items:center;min-height:25px;margin-top:2px;color:#1d5552;font-size:18px;line-height:1.25;font-weight:800;letter-spacing:-.35px}
   .hero-typing-text{overflow-wrap:anywhere}
-  .hero-typing-caret{width:2px;height:19px;flex:0 0 2px;margin-left:4px;border-radius:2px;background:#b7e4d4;opacity:.95}
+  .hero-typing-caret{width:2px;height:19px;flex:0 0 2px;margin-left:4px;border-radius:2px;background:#246c68;opacity:.95}
   .hero-typing-caret.is-idle{animation:hero-caret-blink 1s steps(1,end) infinite}
-  .hero-typing-translation{min-height:17px;margin-top:1px;color:#d1e0d4;font-size:11px;line-height:1.5;opacity:0;transform:translateY(3px);transition:opacity .24s ease,transform .24s ease}
-  .hero-typing-translation.is-visible{opacity:.9;transform:translateY(0)}
+  .hero-typing-translation{min-height:17px;margin-top:1px;color:#385b55;font-size:11px;line-height:1.5;opacity:0;transform:translateY(3px);transition:opacity .24s ease,transform .24s ease}
+  .hero-typing-translation.is-visible{opacity:.95;transform:translateY(0)}
+  body.theme-studio .hero-typing-caption{color:#9ed8c7}
+  body.theme-studio .hero-typing-line{color:#c1f1e4}
+  body.theme-studio .hero-typing-caret{background:#b7e4d4}
+  body.theme-studio .hero-typing-translation{color:#d1e0d4}
   @keyframes hero-caret-blink{0%,48%{opacity:1}49%,100%{opacity:0}}
   @media(prefers-reduced-motion:reduce){.hero-typing-caret.is-idle{animation:none!important}.hero-typing-translation{transition:none!important;transform:none!important}}
 </style>
