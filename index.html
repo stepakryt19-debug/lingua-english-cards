@@ -227,6 +227,22 @@
   .quiz-mode-card:focus-visible{outline:3px solid #54cfc0;outline-offset:3px}
   body.theme-studio .quiz-mode-card:hover{background:#142e38;border-color:#45c9b7;box-shadow:0 14px 32px rgba(0,0,0,.2)}
   @media(max-width:560px){.quiz-mode-grid{grid-template-columns:1fr}.quiz-mode-card{min-height:100px;padding:16px}}
+  .flashcard{overflow:hidden;perspective:1200px}
+  .flashcard-inner{position:absolute;inset:0;transform-style:preserve-3d;transition:transform .68s cubic-bezier(.2,.72,.18,1)}
+  .flashcard.revealed .flashcard-inner{transform:rotateY(180deg)}
+  .flashcard-face{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px;border-radius:inherit;backface-visibility:hidden;-webkit-backface-visibility:hidden}
+  .flashcard-front{background:transparent}
+  .flashcard-back{transform:rotateY(180deg);background:linear-gradient(145deg,#f8fbf8,#edf5f1)}
+  .flashcard-back .answer{display:block;width:min(100%,420px);margin-top:12px}
+  body.theme-studio .flashcard-back{background:linear-gradient(145deg,#183a44,#112630)}
+  body.theme-studio .flashcard .flip-label{color:#8ea7b0}
+  .quiz-card .choice{overflow:visible}
+  .answer-particle-burst{position:absolute;left:50%;top:50%;width:0;height:0;z-index:3;pointer-events:none}
+  .answer-particle-burst i{position:absolute;left:-2.5px;top:-2.5px;display:block;width:5px;height:5px;border-radius:2px;background:#27b68d;box-shadow:0 0 8px rgba(39,182,141,.35);animation:answer-particle-burst .58s cubic-bezier(.2,.65,.3,1) both}
+  .answer-particle-burst i:nth-child(3n+2){background:#f2c45c;box-shadow:0 0 8px rgba(242,196,92,.4)}
+  .answer-particle-burst i:nth-child(3n){background:#6acfd0;box-shadow:0 0 8px rgba(106,207,208,.4)}
+  @keyframes answer-particle-burst{0%{opacity:0;transform:rotate(var(--particle-angle)) translateX(0) scale(.35)}20%{opacity:1}100%{opacity:0;transform:rotate(var(--particle-angle)) translateX(var(--particle-distance)) scale(.15)}}
+  @media(prefers-reduced-motion:reduce){.flashcard-inner{transition:none!important}.answer-particle-burst{display:none!important}}
 </style>
 </head>
 <body>
