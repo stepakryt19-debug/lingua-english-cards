@@ -747,6 +747,26 @@
       if (button) setView(button.dataset.go);
     });
     $('#menu-toggle').addEventListener('click', () => $('#sidebar').classList.toggle('open'));
+    const themePreferenceKey = 'leximo-theme-v1';
+    const themeToggle = $('#theme-toggle');
+    const themeLabel = $('#theme-label');
+    let savedTheme = 'light';
+    try { savedTheme = localStorage.getItem(themePreferenceKey) === 'dark' ? 'dark' : 'light'; } catch (e) {}
+    function applyTheme(theme, persistTheme) {
+      const isDark = theme === 'dark';
+      document.body.classList.toggle('theme-studio', isDark);
+      if (themeToggle) themeToggle.setAttribute('aria-checked', String(isDark));
+      if (themeLabel) themeLabel.textContent = isDark ? 'Тёмная' : 'Светлая';
+      const themeColor = document.querySelector('meta[name="theme-color"]');
+      if (themeColor) themeColor.setAttribute('content', isDark ? '#09171f' : '#f1f6f7');
+      if (persistTheme) {
+        try { localStorage.setItem(themePreferenceKey, isDark ? 'dark' : 'light'); } catch (e) {}
+      }
+    }
+    applyTheme(savedTheme, false);
+    themeToggle.addEventListener('click', () => {
+      applyTheme(document.body.classList.contains('theme-studio') ? 'light' : 'dark', true);
+    });
     $('#sound-toggle').addEventListener('click', () => {
       audioOn = !audioOn;
       $('#sound-toggle').style.color = audioOn ? '#78847a' : '#c08b72';

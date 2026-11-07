@@ -59,6 +59,139 @@
   .ready-pack h2{margin:13px 0 5px;font-size:17px;letter-spacing:-.3px}.ready-pack p{min-height:38px;margin:0;color:var(--muted);font-size:11px}.pack-topic{margin-top:12px;color:var(--green-dark);font-size:10px;font-weight:750}.pack-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:auto;padding-top:16px}.pack-actions button{min-height:36px}.pack-current{display:flex;align-items:center;gap:7px;flex-wrap:wrap;padding:10px 13px;border-radius:11px;background:var(--mint);font-size:11px;color:var(--green-dark)}
   @media(max-width:760px){.pack-promo{align-items:flex-start;flex-direction:column}.pack-promo button{width:100%}.ready-packs-grid{grid-template-columns:1fr}.ready-pack p{min-height:0}.streak-card{margin-top:8px}}
 </style>
+<style id="leximo-studio-theme">
+  body.theme-studio{
+    --ink:#e7f0f3;--muted:#a2b4bc;--line:#263f4a;--paper:#112630;--canvas:#09171f;
+    --green:#167f7b;--green-dark:#6ad8ca;--mint:#183a42;--lime:#a6eee2;
+    --yellow:#342e20;--coral:#ff9b86;--shadow:0 18px 48px rgba(0,0,0,.24);
+    background:var(--canvas);color:var(--ink)
+  }
+  body.theme-studio .sidebar{background:#0d2029;border-color:#203a45}
+  body.theme-studio .nav-label,body.theme-studio .date-label{color:#87a0aa}
+  body.theme-studio .nav-btn{color:#b2c3c9}
+  body.theme-studio .nav-btn:hover{background:#142f39;color:#e5f2f2}
+  body.theme-studio .nav-btn.active{background:#173a40;color:#8ce2d4}
+  body.theme-studio .nav-badge{background:#24434b;color:#9be7dc}
+  body.theme-studio .goal-card,body.theme-studio .streak-card{background:#122831;border-color:#27444d;color:var(--ink)}
+  body.theme-studio .streak-fire{background:#20333a;filter:grayscale(.55);opacity:.8}
+  body.theme-studio .streak-fire.streak-active{background:#3b3320;filter:none;opacity:1;animation:studio-flame 1.8s ease-in-out infinite}
+  body.theme-studio .profile{border-color:#263f4a}
+  body.theme-studio .avatar{background:#24464b;color:#b2eee5}
+  body.theme-studio .icon-btn,body.theme-studio .account-button{background:#112630;border-color:#2a4651;color:#b9cbd0}
+  body.theme-studio .icon-btn:hover{background:#183641;color:#8ce2d4}
+  body.theme-studio .greeting p,body.theme-studio .view-title p{color:var(--muted)}
+  body.theme-studio .hero{background:linear-gradient(118deg,#12313f 0%,#124b53 100%);box-shadow:0 22px 55px rgba(0,0,0,.22)}
+  body.theme-studio .hero:before,body.theme-studio .hero:after{background:rgba(166,238,226,.08)}
+  body.theme-studio .eyebrow{color:#a9e9de}
+  body.theme-studio .eyebrow-dot{background:#77dfce;box-shadow:0 0 14px rgba(119,223,206,.55)}
+  body.theme-studio .hero p{color:#c0d7dc}
+  body.theme-studio .primary-btn{background:#a6eee2;color:#10303a;box-shadow:0 7px 22px rgba(2,22,28,.2)}
+  body.theme-studio .primary-btn:hover{background:#c3f6ee}
+  body.theme-studio .mini-card{background:#f2faf8;color:#153440;box-shadow:0 18px 40px rgba(1,15,22,.36)}
+  body.theme-studio .mini-card.back{background:#c9eee7}
+  body.theme-studio .mini-card small{color:#66818a}
+  body.theme-studio .mini-translation{color:#58717a}
+  body.theme-studio .mini-audio{background:#d9f5ee;color:#177b77}
+  body.theme-studio .stat-card,body.theme-studio .deck-card,body.theme-studio .pack-promo,
+  body.theme-studio .mode-chip,body.theme-studio .flashcard,body.theme-studio .quiz-card,
+  body.theme-studio .finish-card,body.theme-studio .sprint-card,body.theme-studio .ready-pack,
+  body.theme-studio .owned-card,body.theme-studio .library-toolbar,body.theme-studio .empty-state,
+  body.theme-studio .match-tile,body.theme-studio .modal{background:#112630;border-color:#263f4a;color:var(--ink);box-shadow:0 12px 32px rgba(0,0,0,.15)}
+  body.theme-studio .challenge-card{background:#152b32;border-color:#29444c;color:var(--ink)}
+  body.theme-studio .challenge-label,body.theme-studio .challenge-link,body.theme-studio .pack-topic,
+  body.theme-studio .text-btn,body.theme-studio .deck-meta strong{color:#79dacc}
+  body.theme-studio .challenge-card p,body.theme-studio .pack-count,body.theme-studio .ready-pack p,
+  body.theme-studio .stat-label,body.theme-studio .deck-meta,body.theme-studio .deck-progress small,
+  body.theme-studio .profile-sub,body.theme-studio .flip-label,body.theme-studio .hint,
+  body.theme-studio .counter,body.theme-studio .quiz-question-label,body.theme-studio .word-type,
+  body.theme-studio .disabled-note{color:#9eb2ba}
+  body.theme-studio .stat-icon,body.theme-studio .deck-symbol,body.theme-studio .mode-icon,
+  body.theme-studio .speaker{background:#1a3b44;color:#86e1d4}
+  body.theme-studio .stat-icon.yellow{background:#3a3424;color:#f0cf7a}
+  body.theme-studio .stat-icon.pink{background:#3b2d30;color:#ffad96}
+  body.theme-studio .level-tag,body.theme-studio .pack-level,body.theme-studio .pack-current,
+  body.theme-studio .pack-promo{background:#16333c;color:#a6e9df}
+  body.theme-studio .pack-promo span{color:#a2b4bc}
+  body.theme-studio .progress-track,body.theme-studio .study-progress{background:#233d47}
+  body.theme-studio .progress-fill,body.theme-studio .study-progress div{background:linear-gradient(90deg,#31b9ad,#8ce6d8)}
+  body.theme-studio .small-primary,body.theme-studio .control-btn.success{background:#56d2c3;border-color:#56d2c3;color:#08272d}
+  body.theme-studio .small-primary:hover,body.theme-studio .control-btn.success:hover{background:#82e4d8}
+  body.theme-studio .small-secondary,body.theme-studio .control-btn,body.theme-studio .tiny-btn,
+  body.theme-studio .game-option{background:#172f39;border-color:#2a4651;color:#c3d3d8}
+  body.theme-studio .small-secondary:hover,body.theme-studio .control-btn:hover,body.theme-studio .tiny-btn:hover,
+  body.theme-studio .game-option:hover{background:#1d3b45;border-color:#4d8d8d;color:#e6f4f3}
+  body.theme-studio .nav-btn,body.theme-studio .icon-btn,body.theme-studio .mode-chip,
+  body.theme-studio .ready-pack,body.theme-studio .small-primary,body.theme-studio .small-secondary,
+  body.theme-studio .control-btn,body.theme-studio .quiz-choice,body.theme-studio .choice,
+  body.theme-studio .memory-tile,body.theme-studio .match-tile,body.theme-studio .letter-tile{
+    transition:background-color .2s ease,border-color .2s ease,color .2s ease,transform .2s ease,box-shadow .2s ease
+  }
+  body.theme-studio .mode-chip:hover,body.theme-studio .ready-pack:hover,body.theme-studio .stat-card:hover{
+    transform:translateY(-2px);border-color:#3b7478;box-shadow:0 15px 34px rgba(0,0,0,.2)
+  }
+  body.theme-studio .flashcard{background:radial-gradient(ellipse at 50% 0%,#183c46 0%,#112630 68%)}
+  body.theme-studio .flashcard .word{color:#eff8f7}
+  body.theme-studio .flashcard .answer{border-color:#29434d}
+  body.theme-studio .answer-translation{color:#83e3d5}
+  body.theme-studio .answer-example{color:#b4c8ce}
+  body.theme-studio .quiz-question{color:#e8f3f4}
+  body.theme-studio .quiz-choice,body.theme-studio .choice{background:#142c36;border-color:#2a4651;color:#d7e4e7}
+  body.theme-studio .quiz-choice:hover,body.theme-studio .choice:hover{background:#1b3943;border-color:#4c8a8a}
+  body.theme-studio .match-tile,body.theme-studio .letter-tile{background:#172f39;border-color:#2a4651;color:#dcebee}
+  body.theme-studio .match-tile:hover:not(:disabled),body.theme-studio .letter-tile:hover:not(:disabled){background:#1d3b45;border-color:#4d8d8d;color:#f4ffff}
+  body.theme-studio .match-tile.selected,body.theme-studio .match-tile.selected:hover{background:#2a565b;border-color:#61d8c8;color:#f2fbfa;box-shadow:0 0 0 2px rgba(97,216,200,.18),0 6px 18px rgba(0,0,0,.16)}
+  body.theme-studio .letter-tile.used,body.theme-studio .letter-tile.used:hover{background:#254f56;border-color:#55cfc0;color:#eafffb;opacity:1;box-shadow:inset 0 0 0 1px rgba(85,207,192,.2)}
+  body.theme-studio .correct,body.theme-studio .matched{background:#163d3d!important;border-color:#388a7d!important;color:#abf1e5!important}
+  body.theme-studio .wrong,body.theme-studio .mismatch{background:#452e32!important;border-color:#a85d59!important;color:#ffc0ad!important}
+  body.theme-studio .used,body.theme-studio .disabled-note{background:#172b34;color:#a2b4bc}
+  body.theme-studio .owned-list{background:#112630;border-color:#263f4a}
+  body.theme-studio .owned-card+.owned-card{border-color:#263f4a}
+  body.theme-studio .owned-en{color:#e7f0f3}
+  body.theme-studio .owned-ru,body.theme-studio .owned-example{color:#a2b4bc}
+  body.theme-studio .form-field label,body.theme-studio .modal-head h2{color:#e7f0f3}
+  body.theme-studio input,body.theme-studio textarea{background:#0c2029;border-color:#2c4a54;color:#e7f0f3}
+  body.theme-studio input::placeholder,body.theme-studio textarea::placeholder{color:#79919b}
+  body.theme-studio input:focus,body.theme-studio textarea:focus{outline-color:#54cfc0;border-color:#54cfc0}
+  body.theme-studio .auth-notice{background:#193740;color:#b9d5d8}
+  body.theme-studio .auth-error{background:#452e32;color:#ffc0ad}
+  body.theme-studio .auth-success{background:#163d3d;color:#abf1e5}
+  body.theme-studio .auth-email,body.theme-studio .auth-switch{color:#83e3d5}
+  body.theme-studio .modal-close{color:#a8c0c7}
+  body.theme-studio .modal-backdrop{background:rgba(2,10,15,.72)}
+  body.theme-studio .toast{background:#183b43;color:#e4f5f1;border:1px solid #35656a}
+  body.theme-studio .sprint-clock{background:#183a42;color:#8fe4d8}
+  body.theme-studio .sprint-scoreline strong{color:#8fe4d8}
+  body.theme-studio .sprint-entry input{background:#0c2029;color:#e7f0f3}
+  body.theme-studio .memory-tile{background:#173842;color:#b8eee5}
+  body.theme-studio .memory-tile.revealed{background:#1c3a43}
+  body.theme-studio .memory-tile[data-side="ru"].revealed{background:#373324}
+  body.theme-studio .memory-tile.matched{background:#163d3d;border-color:#388a7d;color:#abf1e5}
+  body.theme-studio .memory-tile.wrong{background:#452e32;border-color:#a85d59}
+  body.theme-studio .empty-emoji,body.theme-studio .finish-emoji{filter:saturate(.9)}
+  body.theme-studio .hero-art .mini-card{animation:studio-float 6s ease-in-out infinite}
+  body.theme-studio .hero-art .mini-card.back{animation-delay:-2.2s}
+  body.theme-studio .hero-art .mini-card.front{animation-delay:-4.1s}
+  body.theme-studio .flashcard.revealed{animation:studio-reveal .34s cubic-bezier(.2,.75,.25,1)}
+  body.theme-studio .progress-fill,body.theme-studio .study-progress div{transition:width .45s cubic-bezier(.2,.75,.25,1)}
+  @keyframes studio-float{0%,100%{translate:0 0}50%{translate:0 -7px}}
+  @keyframes studio-reveal{0%{transform:scale(.985)}100%{transform:scale(1)}}
+  @keyframes studio-flame{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+  @media(max-width:760px){body.theme-studio .sidebar{background:#0d2029}body.theme-studio .hero{background:linear-gradient(145deg,#12313f 0%,#124b53 100%)}}
+  @media(prefers-reduced-motion:reduce){body.theme-studio *,body.theme-studio *::before,body.theme-studio *::after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}}
+
+  .theme-control{display:flex;align-items:center;gap:8px}
+  .theme-label{min-width:48px;text-align:right;color:#74868d;font-size:11px;font-weight:650}
+  .theme-toggle{position:relative;display:inline-flex;align-items:center;width:54px;height:30px;padding:3px;border:1px solid #cbd7d9;border-radius:999px;background:#dce5e6;cursor:pointer;transition:background-color .22s ease,border-color .22s ease;flex:0 0 auto}
+  .theme-toggle-thumb{position:absolute;left:3px;top:3px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 1px 4px rgba(13,33,40,.22);transition:transform .22s cubic-bezier(.2,.75,.25,1),background-color .22s ease}
+  .theme-toggle:hover{border-color:#9db4b8}
+  .theme-toggle:focus-visible{outline:3px solid #83bcb5;outline-offset:3px}
+  body.theme-studio .theme-label{color:#a2b4bc}
+  body.theme-studio .theme-toggle{background:#167f7b;border-color:#167f7b}
+  body.theme-studio .theme-toggle:hover{background:#22938b;border-color:#22938b}
+  body.theme-studio .theme-toggle-thumb{transform:translateX(24px);background:#f2fffb}
+  @media(max-width:430px){.theme-label{display:none}}
+  @media(prefers-reduced-motion:reduce){.theme-toggle,.theme-toggle-thumb{transition:none}}
+</style>
 </head>
 <body>
   <div class="app">
@@ -79,7 +212,7 @@
       </div>
     </aside>
     <main class="content">
-      <header class="topbar"><div style="display:flex;align-items:center;gap:12px"><button class="icon-btn mobile-menu" id="menu-toggle" aria-label="Открыть меню"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button><div class="date-label" id="today-date"></div></div><div class="top-actions"><button class="icon-btn" id="sound-toggle" aria-label="Озвучивание включено"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg></button></div></header>
+      <header class="topbar"><div style="display:flex;align-items:center;gap:12px"><button class="icon-btn mobile-menu" id="menu-toggle" aria-label="Открыть меню"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button><div class="date-label" id="today-date"></div></div><div class="top-actions"><div class="theme-control"><span class="theme-label" id="theme-label">Светлая</span><button class="theme-toggle" id="theme-toggle" type="button" role="switch" aria-checked="false" aria-label="Тёмная тема" title="Переключить тему"><span class="theme-toggle-thumb"></span></button></div><button class="icon-btn" id="sound-toggle" aria-label="Озвучивание включено"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg></button></div></header>
       <div class="page" id="view-home">
         <div class="greeting"><h1>Привет! Что сегодня выучим? <span aria-hidden="true">👋</span></h1><p>Создавайте личные наборы и учите только те слова, которые выбрали сами.</p></div>
         <div class="pack-promo"><div><strong>Не хочется заполнять карточки вручную?</strong><span>Выберите готовый набор по теме и уровню.</span></div><button class="small-primary" data-go="packs">Выбрать наборы →</button></div>
