@@ -831,6 +831,7 @@
       };
       $('#sprint-next').onclick = () => { sprintIndex++; renderSprintQuestion(); $('#sprint-answer').focus(); };
       $('#sprint-answer').focus();
+    }
     let installPromptEvent = null;
     const installButton = $('#install-app-btn');
     const standaloneMode = window.matchMedia('(display-mode: standalone)');
@@ -889,7 +890,7 @@
     }
     if (installButton) installButton.addEventListener('click', installLeximo);
     syncInstallButton();
-    $('.nav-btn[data-view]').forEach(button => button.addEventListener('click', () => setView(button.dataset.view)));
+    $$('.nav-btn[data-view]').forEach(button => button.addEventListener('click', () => setView(button.dataset.view)));
     document.addEventListener('click', event => {
       const button = event.target.closest('[data-go]');
       if (button) setView(button.dataset.go);
