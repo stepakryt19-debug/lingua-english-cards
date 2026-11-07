@@ -1,5 +1,5 @@
-const CACHE_NAME = 'lingua-static-v12';
-const APP_FILES = ['./', './index.html', './app.js', './manifest.webmanifest', './icon.svg'];
+const CACHE_NAME = 'lingua-static-v13';
+const APP_FILES = ['./', './index.html', './app.js', './manifest.webmanifest', './icon.svg', './icon-180.png', './icon-192.png', './icon-512.png'];
 const APP_URLS = APP_FILES.map(file => new URL(file, self.registration.scope).href);
 const APP_PATHS = new Set(APP_URLS.map(url => new URL(url).pathname));
 const INDEX_URL = new URL('./index.html', self.registration.scope).href;

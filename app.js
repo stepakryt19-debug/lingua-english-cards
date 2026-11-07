@@ -831,7 +831,65 @@
       };
       $('#sprint-next').onclick = () => { sprintIndex++; renderSprintQuestion(); $('#sprint-answer').focus(); };
       $('#sprint-answer').focus();
-    }    $$('.nav-btn').forEach(button => button.addEventListener('click', () => setView(button.dataset.view)));
+    let installPromptEvent = null;
+    const installButton = $('#install-app-btn');
+    const standaloneMode = window.matchMedia('(display-mode: standalone)');
+    function isLeximoInstalled() {
+      return standaloneMode.matches || navigator.standalone === true;
+    }
+    function syncInstallButton() {
+      if (installButton) installButton.classList.toggle('hidden', isLeximoInstalled());
+    }
+    window.addEventListener('beforeinstallprompt', event => {
+      event.preventDefault();
+      installPromptEvent = event;
+    });
+    window.addEventListener('appinstalled', () => {
+      installPromptEvent = null;
+      syncInstallButton();
+      showToast('Leximo установлено');
+    });
+    if (standaloneMode.addEventListener) standaloneMode.addEventListener('change', syncInstallButton);
+    else if (standaloneMode.addListener) standaloneMode.addListener(syncInstallButton);
+    function showInstallHelp() {
+      const overlay = document.createElement('div');
+      overlay.className = 'modal-backdrop';
+      overlay.id = 'install-help-modal';
+      overlay.innerHTML =
+        '<section class="modal" role="dialog" aria-modal="true" aria-labelledby="install-help-title">' +
+        '<div class="modal-head"><div><h2 id="install-help-title">Установить Leximo</h2><p>Добавьте сайт на главный экран, чтобы открывать его как приложение.</p></div><button type="button" class="modal-close" id="close-install-help" aria-label="Закрыть">×</button></div>' +
+        '<div class="install-guide">' +
+        '<section><h3>iPhone и iPad</h3><p>Откройте сайт в Safari → нажмите «Поделиться» → «На экран Домой» → «Добавить».</p></section>' +
+        '<section><h3>Android</h3><p>В Chrome нажмите ⋮ → «Установить приложение» или «Добавить на главный экран».</p></section>' +
+        '<section><h3>Компьютер</h3><p>В Chrome или Edge нажмите значок установки в адресной строке либо выберите «Установить Leximo» в меню браузера.</p></section>' +
+        '</div><p class="install-guide-note">После установки значок Leximo будет открывать сайт в отдельном окне.</p>' +
+        '<div class="modal-actions"><button type="button" class="small-primary" id="install-help-done">Понятно</button></div></section>';
+      document.body.appendChild(overlay);
+      const close = () => overlay.remove();
+      $('#close-install-help').onclick = close;
+      $('#install-help-done').onclick = close;
+      overlay.addEventListener('click', event => { if (event.target === overlay) close(); });
+      $('#close-install-help').focus();
+    }
+    async function installLeximo() {
+      $('#sidebar').classList.remove('open');
+      if (!installPromptEvent) {
+        showInstallHelp();
+        return;
+      }
+      const promptEvent = installPromptEvent;
+      installPromptEvent = null;
+      try {
+        await promptEvent.prompt();
+        const choice = await promptEvent.userChoice;
+        if (choice.outcome === 'accepted') showToast('Установка Leximo началась');
+      } catch (error) {
+        showInstallHelp();
+      }
+    }
+    if (installButton) installButton.addEventListener('click', installLeximo);
+    syncInstallButton();
+    $('.nav-btn[data-view]').forEach(button => button.addEventListener('click', () => setView(button.dataset.view)));
     document.addEventListener('click', event => {
       const button = event.target.closest('[data-go]');
       if (button) setView(button.dataset.go);
