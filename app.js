@@ -35,7 +35,7 @@
     let streakDays = Number.isFinite(saved.streakDays) ? Math.max(0, Math.min(10000, Math.trunc(saved.streakDays))) : 0;
     let lastStudyDate = typeof saved.lastStudyDate === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(saved.lastStudyDate) ? saved.lastStudyDate : '';
     let cardIndex = 0, quizIndex = 0, quizScore = 0, quizLocked = false;
-    let quizOrder = [], matchItems = [], matchSelected = [], matchFound = 0, audioOn = true, toastTimer;
+    let quizOrder = [], matchItems = [], matchSelected = [], matchFound = 0, audioOn = true, toastTimer, quizAdvanceTimer = null;
     let miniOrder = [], miniIndex = 0, miniScore = 0, miniLocked = false, miniMode = '', letterBank = [], selectedLetters = [], truthExpected = false;
     let memoryItems = [], memoryDeck = [], memoryFlipped = [], memoryFound = 0, memoryMoves = 0, memoryBusy = false, memoryRound = 0;
     let sprintDeck = [], sprintIndex = 0, sprintScore = 0, sprintErrors = 0, sprintTimeLeft = 45, sprintTimer = null, sprintLocked = false;
@@ -134,6 +134,7 @@
       toastTimer = setTimeout(() => el.classList.remove('show'), 2100);
     }
     function setView(view) {
+      if (view !== 'test' && quizAdvanceTimer) { clearTimeout(quizAdvanceTimer); quizAdvanceTimer = null; }
       activeView = view;
       if (view !== 'match') { memoryRound++; memoryBusy = false; if (sprintTimer) { clearInterval(sprintTimer); sprintTimer = null; } }
       views.forEach(v => { const page = $('#view-' + v); if (page) page.classList.toggle('hidden', v !== view); });
@@ -331,6 +332,7 @@
       };
     }
     function startQuiz() {
+      if (quizAdvanceTimer) { clearTimeout(quizAdvanceTimer); quizAdvanceTimer = null; }
       const learningDeck = studyCards();
       if (!learningDeck.length) { renderQuizEmpty(); return; }
       const nextOrder = shuffle(learningDeck.map((_, i) => i)).slice(0, Math.min(learningDeck.length, 10));
@@ -363,10 +365,11 @@
       const questionBody = useChoices
         ? '<div class="quiz-choices">' + options.map((i, n) => '<button class="choice" data-answer="' + i + '"><span class="choice-letter">' + String.fromCharCode(65 + n) + '</span>' + escapeHtml(learningDeck[i].ru) + '</button>').join('') + '</div>'
         : '<form class="quiz-input" id="typed-answer"><input id="answer-input" autocomplete="off" required placeholder="Введите перевод"><button class="small-primary" type="submit">Проверить</button></form>';
-      $('#view-test').innerHTML = '<div class="view-title"><h1>Тест: ' + escapeHtml(studySetTitle()) + '</h1><p>Выберите или введите перевод карточки.</p></div><div class="quiz-shell"><div class="study-topline"><div class="study-type">ВОПРОС ' + (quizIndex + 1) + '</div><div class="counter">' + (quizIndex + 1) + ' / ' + quizOrder.length + '</div></div><div class="study-progress"><div style="width:' + ((quizIndex + 1) / quizOrder.length * 100) + '%"></div></div><div class="quiz-card"><div class="quiz-question-label">КАК ПЕРЕВОДИТСЯ</div><div class="quiz-question">' + escapeHtml(card.en) + '</div>' + questionBody + '<div class="quiz-feedback" id="quiz-feedback"></div><div class="quiz-bottom"><button class="small-secondary" id="quit-quiz">Мои карточки</button><button class="small-primary hidden" id="next-question">Дальше →</button></div></div></div>';
+      $('#view-test').innerHTML = '<div class="view-title"><h1>Тест: ' + escapeHtml(studySetTitle()) + '</h1><p>Выберите или введите перевод карточки.</p></div><div class="quiz-shell"><div class="study-topline"><div class="study-type">ВОПРОС ' + (quizIndex + 1) + '</div><div class="counter">' + (quizIndex + 1) + ' / ' + quizOrder.length + '</div></div><div class="study-progress"><div style="width:' + ((quizIndex + 1) / quizOrder.length * 100) + '%"></div></div><div class="quiz-card"><div class="quiz-question-label">КАК ПЕРЕВОДИТСЯ</div><div class="quiz-question">' + escapeHtml(card.en) + '</div>' + questionBody + '<div class="quiz-feedback" id="quiz-feedback" role="status" aria-live="polite"></div><div class="quiz-bottom"><button class="small-secondary" id="quit-quiz">Мои карточки</button><button class="small-primary hidden" id="next-question">Продолжить →</button></div></div></div>';
       function answerQuestion(correct, selectedButton) {
         if (quizLocked) return;
         quizLocked = true;
+        if (quizAdvanceTimer) clearTimeout(quizAdvanceTimer);
         if (correct) {
           quizScore++;
           knownIds.add(card.id);
@@ -377,20 +380,54 @@
         if (useChoices) {
           $$('.choice').forEach(button => {
             button.disabled = true;
-            if (Number(button.dataset.answer) === index) button.classList.add('correct');
+            const answerIndex = Number(button.dataset.answer);
+            if (answerIndex === index) {
+              button.classList.add(correct ? 'correct' : 'reveal-correct');
+            } else if (!correct && button === selectedButton) {
+              button.classList.add('wrong');
+            } else {
+              button.classList.add('muted');
+            }
           });
-          if (!correct && selectedButton) selectedButton.classList.add('wrong');
+        } else {
+          const answerInput = $('#answer-input');
+          const submitButton = $('#typed-answer button[type="submit"]');
+          if (answerInput) answerInput.disabled = true;
+          if (submitButton) submitButton.disabled = true;
         }
-        $('#quiz-feedback').textContent = correct ? 'Верно! Это перевод из вашей карточки.' : 'Правильный ответ: ' + card.ru;
-        $('#quiz-feedback').style.color = correct ? '#286340' : '#a34f43';
-        $('#next-question').classList.remove('hidden');
+        const feedback = $('#quiz-feedback');
+        feedback.textContent = correct ? (useChoices ? '' : 'Верно!') : 'Правильный ответ: ' + card.ru;
+        feedback.classList.toggle('is-correct', correct);
+        feedback.classList.toggle('is-wrong', !correct);
+        const nextButton = $('#next-question');
+        if (correct) {
+          nextButton.classList.add('hidden');
+          quizAdvanceTimer = setTimeout(() => {
+            quizAdvanceTimer = null;
+            if (activeView !== 'test') return;
+            quizIndex++;
+            renderQuizQuestion();
+          }, 720);
+        } else {
+          quizAdvanceTimer = setTimeout(() => {
+            quizAdvanceTimer = null;
+            if (activeView !== 'test') return;
+            nextButton.classList.remove('hidden');
+            nextButton.focus({preventScroll:true});
+          }, 480);
+        }
       }
       if (useChoices) {
         $$('.choice').forEach(button => button.onclick = () => answerQuestion(Number(button.dataset.answer) === index, button));
       } else {
         $('#typed-answer').onsubmit = e => { e.preventDefault(); answerQuestion(normalize($('#answer-input').value) === normalize(card.ru), null); };
       }
-      $('#next-question').onclick = () => { quizIndex++; renderQuizQuestion(); };
+      $('#next-question').onclick = () => {
+        if (quizAdvanceTimer) clearTimeout(quizAdvanceTimer);
+        quizAdvanceTimer = null;
+        quizIndex++;
+        renderQuizQuestion();
+      };
       $('#quit-quiz').onclick = () => setView('cards');
     }
     function startMatch() { renderGameHub(); }
