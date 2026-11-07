@@ -302,6 +302,32 @@
   @media(max-width:760px){.greeting{min-height:100px;gap:8px;margin:8px 0 16px}.greeting-copy{flex:1 1 auto;max-width:calc(100% - 92px)}.greeting h1{font-size:23px;letter-spacing:-.7px}.greeting p{font-size:12px}.greeting-art{flex-basis:92px;height:82px}.greeting-orbit{width:94px;height:60px}.greeting-token{gap:6px;padding:8px 10px;font-size:11px}.greeting-floating{right:-5px;bottom:0;font-size:8px;padding:4px 6px}}
   @media(max-width:430px){.greeting-art{flex-basis:64px;transform:scale(.78);transform-origin:center right;margin-left:-12px}.greeting-copy{max-width:100%}.greeting-floating{display:none}.greeting h1{font-size:21px;letter-spacing:-.55px}.greeting-kicker{font-size:8px}}
   @media(prefers-reduced-motion:reduce){.greeting-copy{animation:none!important}.greeting-kicker-dot,.greeting-wave,.greeting-orbit,.greeting-token,.greeting-floating,.greeting-star{animation:none!important}}
+
+  .mode-row{perspective:900px}
+  .mode-chip{position:relative;isolation:isolate;overflow:hidden;opacity:0;animation:quick-tile-enter .62s cubic-bezier(.2,.85,.2,1) forwards;transition:transform .28s cubic-bezier(.2,.8,.2,1),border-color .28s,box-shadow .28s}
+  .mode-chip:nth-child(1){animation-delay:80ms}
+  .mode-chip:nth-child(2){animation-delay:180ms}
+  .mode-chip:nth-child(3){animation-delay:280ms}
+  .mode-chip:before{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;background:linear-gradient(112deg,transparent 28%,rgba(255,255,255,.62) 48%,rgba(219,244,235,.18) 54%,transparent 72%);transform:translateX(-135%);transition:transform .72s cubic-bezier(.2,.65,.3,1)}
+  .mode-chip>*{position:relative;z-index:1}
+  .mode-chip:hover,.mode-chip:focus-visible{transform:translateY(-5px) scale(1.012);border-color:#8bbdb1;box-shadow:0 14px 30px rgba(36,108,104,.14)}
+  .mode-chip:active{transform:translateY(-1px) scale(.99)}
+  .mode-chip:hover:before,.mode-chip:focus-visible:before{transform:translateX(135%)}
+  .mode-chip .mode-icon{position:relative;transition:transform .32s cubic-bezier(.2,.8,.2,1),box-shadow .32s}
+  .mode-chip .mode-icon:after{content:"";position:absolute;inset:-4px;border:1px solid rgba(36,108,104,.2);border-radius:13px;opacity:0;transform:scale(.72);transition:opacity .28s,transform .32s cubic-bezier(.2,.8,.2,1)}
+  .mode-chip .mode-icon svg{transition:transform .32s cubic-bezier(.2,.8,.2,1)}
+  .mode-chip:hover .mode-icon,.mode-chip:focus-visible .mode-icon{transform:rotate(-7deg) scale(1.09);box-shadow:0 5px 13px rgba(36,108,104,.13)}
+  .mode-chip:hover .mode-icon:after,.mode-chip:focus-visible .mode-icon:after{opacity:1;transform:scale(1)}
+  .mode-chip:nth-child(2):hover .mode-icon svg,.mode-chip:nth-child(2):focus-visible .mode-icon svg{transform:scale(1.18)}
+  .mode-chip:nth-child(3):hover .mode-icon svg,.mode-chip:nth-child(3):focus-visible .mode-icon svg{transform:rotate(12deg)}
+  .mode-chip .chevron{transition:transform .25s ease,color .25s ease}
+  .mode-chip:hover .chevron,.mode-chip:focus-visible .chevron{transform:translateX(4px);color:var(--green)}
+  body.theme-studio .mode-chip:before{background:linear-gradient(112deg,transparent 28%,rgba(146,229,215,.22) 48%,rgba(146,229,215,.07) 54%,transparent 72%)}
+  body.theme-studio .mode-chip:hover,body.theme-studio .mode-chip:focus-visible{border-color:#4a8285;box-shadow:0 15px 32px rgba(0,0,0,.23)}
+  body.theme-studio .mode-chip .mode-icon:after{border-color:rgba(134,225,212,.3)}
+  body.theme-studio .mode-chip:hover .chevron,body.theme-studio .mode-chip:focus-visible .chevron{color:#8ce2d4}
+  @keyframes quick-tile-enter{0%{opacity:0;transform:translateY(12px) scale(.985)}72%{opacity:1;transform:translateY(-2px) scale(1.006)}100%{opacity:1;transform:translateY(0) scale(1)}}
+  @media(prefers-reduced-motion:reduce){.mode-chip{opacity:1!important;transform:none!important;animation:none!important;transition:none!important}.mode-chip:before{display:none}.mode-chip .mode-icon,.mode-chip .mode-icon:after,.mode-chip .mode-icon svg,.mode-chip .chevron{transition:none!important;transform:none!important}}
 </style>
 </head>
 <body>
