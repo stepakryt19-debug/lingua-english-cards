@@ -836,6 +836,13 @@
       $('#sound-toggle').setAttribute('aria-label', audioOn ? 'Озвучивание включено' : 'Озвучивание выключено');
       showToast(audioOn ? 'Озвучивание включено' : 'Озвучивание выключено');
     });
+    document.addEventListener('keydown', event => {
+      const target = event.target;
+      const typing = target instanceof HTMLElement && (target.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName));
+      if (typing || !event.ctrlKey || !event.altKey || event.shiftKey || event.key.toLowerCase() !== 'l') return;
+      event.preventDefault();
+      window.open('https://leximo-stats.goatcounter.com/', '_blank', 'noopener,noreferrer');
+    });
     $('#today-date').textContent = now.toLocaleDateString('ru-RU', {weekday:'long', day:'numeric', month:'long'}).toLocaleUpperCase('ru-RU');
     updateStats();
     if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
