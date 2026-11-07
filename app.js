@@ -236,87 +236,27 @@
       ).join('');
       const listContent = cards.length ? '<div class="owned-list">' + rows + '</div>' : emptyState('Пока нет карточек', 'Добавьте английское слово или фразу и свой перевод. Затем сможете учить их здесь.', 'empty-add', 'Создать первую карточку');
       $('#view-cards').innerHTML =
-        '<div class="view-title"><h1>Мои карточки</h1><p>' + (selectedPack ? 'Для занятий выбран набор «' + escapeHtml(selectedPack.title) + '». Остальные карточки остаются в вашем словаре.' : 'Ваш личный набор слов и фраз. Добавляйте, редактируйте и повторяйте его.') + '</p></div>' +
-        '<div class="library-toolbar"><div class="library-count">В наборе: <strong>' + cards.length + '</strong></div><div class="library-actions">' +
-        (selectedPack ? '<button class="small-secondary" id="all-cards-btn">Учить все карточки</button>' : '<button class="small-secondary" id="browse-packs-btn">Готовые наборы</button>') +
-        '<button class="small-secondary" id="study-btn"' + (learningDeck.length ? '' : ' disabled') + '>' + (selectedPack ? 'Учить этот набор' : 'Учить карточки') + '</button>' +
-        '<button class="small-secondary" id="test-btn"' + (learningDeck.length ? '' : ' disabled') + '>Тест</button>' +
-        '<button class="small-secondary" id="match-btn"' + (learningDeck.length < 1 ? ' disabled' : '') + '>Мини-игры</button>' +
-        '<button class="small-primary" id="add-card-btn">+ Добавить карточку</button></div></div>' +
-        '<div id="owned-list">' + listContent + '</div>' +
-        (learningDeck.length === 1 ? '<p class="disabled-note">Для игр «Подбор пар», «Память» и «Верно или нет» в этом наборе нужна ещё одна карточка. Остальные режимы доступны.</p>' : '');
-      $('#add-card-btn').onclick = () => showCardForm();
-      if ($('#browse-packs-btn')) $('#browse-packs-btn').onclick = () => setView('packs');
-      if ($('#all-cards-btn')) $('#all-cards-btn').onclick = () => { activeStudyPack = null; renderLibrary(); };
-      if ($('#empty-add')) $('#empty-add').onclick = () => showCardForm();
-      if ($('#study-btn')) $('#study-btn').onclick = () => { cardIndex = 0; renderStudy(); };
-      if ($('#test-btn')) $('#test-btn').onclick = () => setView('test');
-      if ($('#match-btn')) $('#match-btn').onclick = () => setView('match');
-      $$('[data-edit]').forEach(button => button.onclick = () => showCardForm(button.dataset.edit));
-      $$('[data-delete]').forEach(button => button.onclick = () => {
-        const card = cards.find(c => c.id === button.dataset.delete);
-        if (!card || !window.confirm('Удалить карточку «' + card.en + '»?')) return;
-        cards = cards.filter(c => c.id !== card.id);
-        knownIds.delete(card.id);
-        persist();
-        updateStats();
-        renderLibrary();
-        showToast('Карточка удалена');
-      });
-    }
-    function showCardForm(id) {
-      const card = id ? cards.find(c => c.id === id) : null;
-      const overlay = document.createElement('div');
-      overlay.className = 'modal-backdrop';
-      overlay.id = 'card-modal';
-      overlay.innerHTML =
-        '<form class="modal" id="card-form"><div class="modal-head"><div><h2>' + (card ? 'Изменить карточку' : 'Новая карточка') + '</h2><p>Заполните английскую сторону и перевод.</p></div><button type="button" class="modal-close" id="modal-close" aria-label="Закрыть">×</button></div>' +
-        '<div class="form-field"><label for="card-en">Слово или фраза на английском *</label><input id="card-en" maxlength="120" required placeholder="Введите своё слово или фразу" value="' + escapeHtml(card ? card.en : '') + '"></div>' +
-        '<div class="form-field"><label for="card-ru">Перевод *</label><input id="card-ru" maxlength="180" required placeholder="Введите свой перевод" value="' + escapeHtml(card ? card.ru : '') + '"></div>' +
-        '<div class="form-field"><label for="card-example">Пример предложения (необязательно)</label><textarea id="card-example" maxlength="260" placeholder="Добавьте свой пример, если нужно">' + escapeHtml(card ? card.example || '' : '') + '</textarea></div>' +
-        '<div class="modal-actions"><button type="button" class="small-secondary" id="cancel-card">Отмена</button><button type="submit" class="small-primary">Сохранить</button></div></form>';
-      document.body.appendChild(overlay);
-      const close = () => overlay.remove();
-      $('#modal-close').onclick = close;
-      $('#cancel-card').onclick = close;
-      overlay.addEventListener('click', e => { if (e.target === overlay) close(); });
-      $('#card-en').focus();
-      $('#card-form').addEventListener('submit', e => {
-        e.preventDefault();
-        const updated = {
-          id: card ? card.id : 'c' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
-          en: $('#card-en').value.trim(),
-          ru: $('#card-ru').value.trim(),
-          example: $('#card-example').value.trim()
-        };
-        if (!updated.en || !updated.ru) return;
-        if (card) cards = cards.map(c => c.id === card.id ? updated : c);
-        else cards.push(updated);
-        persist();
-        close();
-        updateStats();
-        renderLibrary();
-        showToast(card ? 'Изменения сохранены' : 'Карточка добавлена');
-      });
-    }
-    function renderStudy() {
-      const learningDeck = studyCards();
-      if (!learningDeck.length) { renderLibrary(); return; }
-      const card = learningDeck[cardIndex % learningDeck.length];
-      const selectedPack = activeStudyPack && READY_PACKS.find(pack => pack.id === activeStudyPack);
-      $('#view-cards').innerHTML =
         '<div class="view-title"><h1>' + (selectedPack ? escapeHtml(selectedPack.title) : 'Учить карточки') + '</h1><p>Вспомните перевод, затем откройте ответ.</p></div>' +
         '<div class="study-shell"><div class="study-topline"><div class="study-type">' + (selectedPack ? 'ГОТОВЫЙ НАБОР' : 'МОЙ НАБОР') + '</div><div class="counter">' + (cardIndex + 1) + ' / ' + learningDeck.length + '</div></div>' +
         '<div class="study-progress"><div style="width:' + ((cardIndex + 1) / learningDeck.length * 100) + '%"></div></div>' +
-        '<div class="flashcard" id="flashcard" role="button" tabindex="0" aria-label="Нажмите, чтобы открыть перевод"><div class="word-type">МОЯ КАРТОЧКА</div>' +
-        '<button class="speaker" id="speak-card" aria-label="Прослушать слово"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4zM15.5 8.5a5 5 0 0 1 0 7"/></svg></button>' +
-        '<div class="word">' + escapeHtml(card.en) + '</div><div class="hint">Нажмите, чтобы увидеть перевод</div><div class="answer"><div class="answer-translation">' + escapeHtml(card.ru) + '</div>' +
-        (card.example ? '<div class="answer-example">“' + escapeHtml(card.example) + '”</div>' : '') +
-        '</div><div class="flip-label">ПЕРЕВЕРНУТЬ КАРТОЧКУ</div></div>' +
+        '<div class="flashcard" id="flashcard" role="button" tabindex="0" aria-label="Нажмите, чтобы открыть перевод"><div class="flashcard-inner">' +
+          '<div class="flashcard-face flashcard-front" id="flashcard-front" aria-hidden="false"><div class="word-type">МОЯ КАРТОЧКА</div>' +
+          '<button class="speaker" id="speak-card" aria-label="Прослушать слово"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4zM15.5 8.5a5 5 0 0 1 0 7"/></svg></button>' +
+          '<div class="word">' + escapeHtml(card.en) + '</div><div class="hint">Нажмите, чтобы увидеть перевод</div><div class="flip-label">ПЕРЕВЕРНУТЬ КАРТОЧКУ</div></div>' +
+          '<div class="flashcard-face flashcard-back" id="flashcard-back" aria-hidden="true"><div class="word-type">ПЕРЕВОД</div>' +
+          '<div class="answer"><div class="answer-translation">' + escapeHtml(card.ru) + '</div>' +
+          (card.example ? '<div class="answer-example">“' + escapeHtml(card.example) + '”</div>' : '') +
+          '</div><div class="flip-label">НАЖМИТЕ, ЧТОБЫ ВЕРНУТЬСЯ</div></div></div></div>' +
         '<div class="flash-controls"><button class="control-btn" id="back-library">К моим карточкам</button><button class="control-btn" id="again-card">Повторить</button><button class="control-btn success" id="known-card">Знаю ✓</button><button class="control-btn" id="next-card">Дальше →</button></div></div>';
-      const flip = () => $('#flashcard').classList.toggle('revealed');
-      $('#flashcard').addEventListener('click', e => { if (!e.target.closest('button')) flip(); });
-      $('#flashcard').addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); flip(); } });
+      const flashcard = $('#flashcard');
+      const flip = () => {
+        const revealed = flashcard.classList.toggle('revealed');
+        $('#flashcard-front').setAttribute('aria-hidden', String(revealed));
+        $('#flashcard-back').setAttribute('aria-hidden', String(!revealed));
+        flashcard.setAttribute('aria-label', revealed ? 'Нажмите, чтобы вернуться к слову' : 'Нажмите, чтобы открыть перевод');
+      };
+      flashcard.addEventListener('click', e => { if (!e.target.closest('button')) flip(); });
+      flashcard.addEventListener('keydown', e => { if ((e.key === 'Enter' || e.key === ' ') && !e.target.closest('button')) { e.preventDefault(); flip(); } });
       $('#speak-card').onclick = e => { e.stopPropagation(); speak(card.en); };
       $('#back-library').onclick = renderLibrary;
       $('#again-card').onclick = () => { cardIndex = (cardIndex + 1) % learningDeck.length; showToast('Вернёмся к этой карточке позже'); renderStudy(); };
@@ -330,6 +270,20 @@
         cardIndex = (cardIndex + 1) % learningDeck.length;
         renderStudy();
       };
+    }
+    function burstCorrectAnswer(button) {
+      if (!button || !window.matchMedia || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      const burst = document.createElement('span');
+      burst.className = 'answer-particle-burst';
+      burst.setAttribute('aria-hidden', 'true');
+      for (let index = 0; index < 8; index++) {
+        const particle = document.createElement('i');
+        particle.style.setProperty('--particle-angle', (index * 45) + 'deg');
+        particle.style.setProperty('--particle-distance', (28 + (index % 2) * 9) + 'px');
+        burst.appendChild(particle);
+      }
+      button.appendChild(burst);
+      setTimeout(() => burst.remove(), 680);
     }
     function quizDirectionLabel() {
       return quizDirection === 'ru-en' ? 'Русский -> английский' : 'Английский -> русский';
@@ -415,6 +369,7 @@
               button.classList.add('muted');
             }
           });
+          if (correct) burstCorrectAnswer(selectedButton);
         } else {
           const answerInput = $('#answer-input');
           const submitButton = $('#typed-answer button[type="submit"]');
