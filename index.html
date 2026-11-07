@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'none'; object-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; manifest-src 'self'; form-action 'self'; frame-src 'none'; upgrade-insecure-requests">
   <meta name="referrer" content="strict-origin-when-cross-origin">
-  <meta name="theme-color" content="#09171f">
+  <meta name="theme-color" content="#f1f6f7">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Leximo">
   <link rel="manifest" href="./manifest.webmanifest">
@@ -178,9 +178,22 @@
   @keyframes studio-flame{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
   @media(max-width:760px){body.theme-studio .sidebar{background:#0d2029}body.theme-studio .hero{background:linear-gradient(145deg,#12313f 0%,#124b53 100%)}}
   @media(prefers-reduced-motion:reduce){body.theme-studio *,body.theme-studio *::before,body.theme-studio *::after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}}
+
+  .theme-control{display:flex;align-items:center;gap:8px}
+  .theme-label{min-width:48px;text-align:right;color:#74868d;font-size:11px;font-weight:650}
+  .theme-toggle{position:relative;display:inline-flex;align-items:center;width:54px;height:30px;padding:3px;border:1px solid #cbd7d9;border-radius:999px;background:#dce5e6;cursor:pointer;transition:background-color .22s ease,border-color .22s ease;flex:0 0 auto}
+  .theme-toggle-thumb{position:absolute;left:3px;top:3px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 1px 4px rgba(13,33,40,.22);transition:transform .22s cubic-bezier(.2,.75,.25,1),background-color .22s ease}
+  .theme-toggle:hover{border-color:#9db4b8}
+  .theme-toggle:focus-visible{outline:3px solid #83bcb5;outline-offset:3px}
+  body.theme-studio .theme-label{color:#a2b4bc}
+  body.theme-studio .theme-toggle{background:#167f7b;border-color:#167f7b}
+  body.theme-studio .theme-toggle:hover{background:#22938b;border-color:#22938b}
+  body.theme-studio .theme-toggle-thumb{transform:translateX(24px);background:#f2fffb}
+  @media(max-width:430px){.theme-label{display:none}}
+  @media(prefers-reduced-motion:reduce){.theme-toggle,.theme-toggle-thumb{transition:none}}
 </style>
 </head>
-<body class="theme-studio">
+<body>
   <div class="app">
     <aside class="sidebar" id="sidebar">
       <div class="brand"><span class="brand-mark">L</span><span class="brand-copy"><span class="brand-word">leximo</span><span class="brand-tagline">ТВОИ СЛОВА · ТВОЙ ПУТЬ</span></span></div>
@@ -199,7 +212,7 @@
       </div>
     </aside>
     <main class="content">
-      <header class="topbar"><div style="display:flex;align-items:center;gap:12px"><button class="icon-btn mobile-menu" id="menu-toggle" aria-label="Открыть меню"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button><div class="date-label" id="today-date"></div></div><div class="top-actions"><button class="icon-btn" id="sound-toggle" aria-label="Озвучивание включено"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg></button></div></header>
+      <header class="topbar"><div style="display:flex;align-items:center;gap:12px"><button class="icon-btn mobile-menu" id="menu-toggle" aria-label="Открыть меню"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button><div class="date-label" id="today-date"></div></div><div class="top-actions"><div class="theme-control"><span class="theme-label" id="theme-label">Светлая</span><button class="theme-toggle" id="theme-toggle" type="button" role="switch" aria-checked="false" aria-label="Тёмная тема" title="Переключить тему"><span class="theme-toggle-thumb"></span></button></div><button class="icon-btn" id="sound-toggle" aria-label="Озвучивание включено"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg></button></div></header>
       <div class="page" id="view-home">
         <div class="greeting"><h1>Привет! Что сегодня выучим? <span aria-hidden="true">👋</span></h1><p>Создавайте личные наборы и учите только те слова, которые выбрали сами.</p></div>
         <div class="pack-promo"><div><strong>Не хочется заполнять карточки вручную?</strong><span>Выберите готовый набор по теме и уровню.</span></div><button class="small-primary" data-go="packs">Выбрать наборы →</button></div>
